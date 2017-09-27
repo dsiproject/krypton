@@ -29,28 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/**
+ * Implementation of the Salsa family of stream ciphers.
+ */
 package net.metricspace.crypto.ciphers.stream.salsa;
-
-import javax.crypto.spec.IvParameterSpec;
-
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
-
-public class SalsaFamilyParameterSpec
-    extends IvParameterSpec
-    implements PositionParameterSpec {
-    private final long pos;
-
-    SalsaFamilyParameterSpec(final byte[] iv,
-                             final long pos) {
-        super(iv, 0, SalsaFamilyCipherSpi.IV_LEN);
-        this.pos = pos;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getPosition() {
-        return pos;
-    }
-}

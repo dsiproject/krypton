@@ -31,26 +31,30 @@
  */
 package net.metricspace.crypto.ciphers.stream.salsa;
 
-import javax.crypto.spec.IvParameterSpec;
+import java.security.AlgorithmParameters;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
+import net.metricspace.crypto.providers.KryptonProvider;
 
-public class SalsaFamilyParameterSpec
-    extends IvParameterSpec
-    implements PositionParameterSpec {
-    private final long pos;
-
-    SalsaFamilyParameterSpec(final byte[] iv,
-                             final long pos) {
-        super(iv, 0, SalsaFamilyCipherSpi.IV_LEN);
-        this.pos = pos;
-    }
-
+/**
+ * A {@link java.security.AlgorithmParameterGeneratorSpi} instance
+ * for the ChaCha20 cipher.
+ */
+public final class ChaCha20ParameterGeneratorSpi
+    extends SalsaFamilyParameterGeneratorSpi {
     /**
      * {@inheritDoc}
      */
     @Override
-    public long getPosition() {
-        return pos;
+    protected final AlgorithmParameters createParameters()
+        throws NoSuchProviderException {
+        try {
+            return AlgorithmParameters.getInstance(ChaCha20CipherSpi.NAME,
+                                                   KryptonProvider.NAME);
+        } catch(final NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

@@ -4,8 +4,8 @@ package net.metricspace.crypto.ciphers.stream.salsa;
  * A {@link javax.crypto.CipherSpi} base class for Salsa{@code n}
  * variants.
  */
-abstract class SalsaSpi<K extends SalsaFamilySpi.SalsaFamilyKey>
-    extends SalsaFamilySpi<K> {
+abstract class SalsaCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
+    extends SalsaFamilyCipherSpi<K> {
     /**
      * Compute one double round (a row round followed by a column round).
      */
