@@ -55,26 +55,10 @@ public final class KryptonProviderDeprecated extends Provider {
     public static final double VERSION = 1.0;
 
     /**
-     * The singleton instance.
-     */
-    private static final KryptonProviderDeprecated instance =
-        new KryptonProviderDeprecated();
-
-    /**
      * Initialize this {@code KryptonProviderDeprecated}.
      */
-    private KryptonProviderDeprecated() {
-        super(NAME, VERSION, "Krypton curated cipher suite");
-    }
-
-    /**
-     * Get the singleton instance.
-     *
-     * @return The singleton instance.
-     * @see #instance
-     */
-    public static KryptonProviderDeprecated getInstance() {
-        return instance;
+    public KryptonProviderDeprecated() {
+        super(NAME, VERSION, "Krypton deprecated cipher suite");
     }
 
     /**

@@ -63,26 +63,10 @@ public final class KryptonProviderExperimental extends Provider {
     public static final double VERSION = 1.0;
 
     /**
-     * The singleton instance.
-     */
-    private static final KryptonProviderExperimental instance =
-        new KryptonProviderExperimental();
-
-    /**
      * Initialize this {@code KryptonProviderExperimental}.
      */
-    private KryptonProviderExperimental() {
-        super(NAME, VERSION, "Krypton curated cipher suite");
-    }
-
-    /**
-     * Get the singleton instance.
-     *
-     * @return The singleton instance.
-     * @see #instance
-     */
-    public static KryptonProviderExperimental getInstance() {
-        return instance;
+    public KryptonProviderExperimental() {
+        super(NAME, VERSION, "Krypton experimental cipher suite");
     }
 
     /**
