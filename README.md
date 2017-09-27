@@ -2,7 +2,7 @@
 
 The Krypton library implements a curated list of cryptographic algorithms
 within the Java Cryptography Architecture (JCA) framework (see
-(documentation)[https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html]).
+[documentation](https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html)).
 The goal of Krypton is to provide easy access to a wider range of cryptographic
 algorithms, thereby helping to avoid cryptographic monoculture.
 

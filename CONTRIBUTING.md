@@ -7,7 +7,7 @@ Contributions to Krypton should abide by the following guidelines:
 ### Branching Conventions
 
 This project uses the
- (GitFlow workflow)[https://datasift.github.io/gitflow/IntroducingGitFlow.html].
+ [GitFlow workflow](https://datasift.github.io/gitflow/IntroducingGitFlow.html).
 
 Specifically, the following branches are privileged, and should not be modified
 directly:
@@ -26,7 +26,7 @@ it back in.
 The following rules should be observed for all commits and merges:
 
 * All commits must be signed.  See
-  (this guide)[https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work] for
+  [this guide](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work) for
   information on signed commits.
 
 * All feature branch merges must have a corresponding issue number.
@@ -34,7 +34,7 @@ The following rules should be observed for all commits and merges:
 * Whenever a feature branch is merged, `devel` must be tagged with the issue
   number, and the issue should be closed.
 
-## Code Convetions
+## Code Conventions
 
 The following rules should be observed with regard to code:
 
@@ -48,7 +48,7 @@ The following rules should be observed with regard to code:
 * Include tests for nontrivial functionality
 * All tests must pass all the time
 * Abide by
-  (Java secure code conventions)[http://www.oracle.com/technetwork/java/seccodeguide-139067.html]
+  [Java secure code conventions](http://www.oracle.com/technetwork/java/seccodeguide-139067.html)
 * Use the `final` keyword liberally in variable and parameter definitions.
 * Mark all overrides with `@Override`
 
