@@ -100,37 +100,37 @@ abstract class SalsaFamilyCipherSpi<K extends
             final byte[] out = new byte[KEY_LEN];
 
             out[0] = (byte)(data[0] & 0xff);
-            out[1] = (byte)((data[0] >> 8) & 0xff);
-            out[2] = (byte)((data[0] >> 16) & 0xff);
-            out[3] = (byte)((data[0] >> 24) & 0xff);
+            out[1] = (byte)((data[0] >>> 8) & 0xff);
+            out[2] = (byte)((data[0] >>> 16) & 0xff);
+            out[3] = (byte)((data[0] >>> 24) & 0xff);
             out[4] = (byte)(data[1] & 0xff);
-            out[5] = (byte)((data[1] >> 8) & 0xff);
-            out[6] = (byte)((data[1] >> 16) & 0xff);
-            out[7] = (byte)((data[1] >> 24) & 0xff);
+            out[5] = (byte)((data[1] >>> 8) & 0xff);
+            out[6] = (byte)((data[1] >>> 16) & 0xff);
+            out[7] = (byte)((data[1] >>> 24) & 0xff);
             out[8] = (byte)(data[2] & 0xff);
-            out[9] = (byte)((data[2] >> 8) & 0xff);
-            out[10] = (byte)((data[2] >> 16) & 0xff);
-            out[11] = (byte)((data[2] >> 24) & 0xff);
+            out[9] = (byte)((data[2] >>> 8) & 0xff);
+            out[10] = (byte)((data[2] >>> 16) & 0xff);
+            out[11] = (byte)((data[2] >>> 24) & 0xff);
             out[12] = (byte)(data[3] & 0xff);
-            out[13] = (byte)((data[3] >> 8) & 0xff);
-            out[14] = (byte)((data[3] >> 16) & 0xff);
-            out[15] = (byte)((data[3] >> 24) & 0xff);
+            out[13] = (byte)((data[3] >>> 8) & 0xff);
+            out[14] = (byte)((data[3] >>> 16) & 0xff);
+            out[15] = (byte)((data[3] >>> 24) & 0xff);
             out[16] = (byte)(data[4] & 0xff);
-            out[17] = (byte)((data[4] >> 8) & 0xff);
-            out[18] = (byte)((data[4] >> 16) & 0xff);
-            out[19] = (byte)((data[4] >> 24) & 0xff);
+            out[17] = (byte)((data[4] >>> 8) & 0xff);
+            out[18] = (byte)((data[4] >>> 16) & 0xff);
+            out[19] = (byte)((data[4] >>> 24) & 0xff);
             out[20] = (byte)(data[5] & 0xff);
-            out[21] = (byte)((data[5] >> 8) & 0xff);
-            out[22] = (byte)((data[5] >> 16) & 0xff);
-            out[23] = (byte)((data[5] >> 24) & 0xff);
+            out[21] = (byte)((data[5] >>> 8) & 0xff);
+            out[22] = (byte)((data[5] >>> 16) & 0xff);
+            out[23] = (byte)((data[5] >>> 24) & 0xff);
             out[24] = (byte)(data[6] & 0xff);
-            out[25] = (byte)((data[6] >> 8) & 0xff);
-            out[26] = (byte)((data[6] >> 16) & 0xff);
-            out[27] = (byte)((data[6] >> 24) & 0xff);
+            out[25] = (byte)((data[6] >>> 8) & 0xff);
+            out[26] = (byte)((data[6] >>> 16) & 0xff);
+            out[27] = (byte)((data[6] >>> 24) & 0xff);
             out[28] = (byte)(data[7] & 0xff);
-            out[29] = (byte)((data[7] >> 8) & 0xff);
-            out[30] = (byte)((data[7] >> 16) & 0xff);
-            out[31] = (byte)((data[7] >> 24) & 0xff);
+            out[29] = (byte)((data[7] >>> 8) & 0xff);
+            out[30] = (byte)((data[7] >>> 16) & 0xff);
+            out[31] = (byte)((data[7] >>> 24) & 0xff);
 
             return out;
         }
@@ -542,10 +542,10 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * Compute the next stream block.
      */
-    private void streamBlock() {
-        initState();
+    void streamBlock() {
+        initBlock();
         rounds();
-        addState();
+        addBlock();
     }
 
     /**
@@ -560,7 +560,7 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * Add the initial block state to the final state.
      */
-    private void addState() {
+    private void addBlock() {
         block[0] += 0x61707865;
         block[1] += key.data[0];
         block[2] += key.data[1];
@@ -582,7 +582,7 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * Initialize the stream block state.
      */
-    private void initState() {
+    void initBlock() {
         block[0] = 0x61707865;
         block[1] = key.data[0];
         block[2] = key.data[1];

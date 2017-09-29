@@ -48,19 +48,19 @@ public abstract class ChaChaCipherSpi<K extends
                                     final int[] block) {
         block[a] ^= block[b];
         block[d] += block[a];
-        block[d] = (block[d] << 16) | (block[d] >> 48);
+        block[d] = (block[d] << 16) | (block[d] >>> 48);
 
         block[c] ^= block[d];
         block[b] += block[c];
-        block[b] = (block[b] << 12) | (block[b] >> 52);
+        block[b] = (block[b] << 12) | (block[b] >>> 52);
 
         block[a] ^= block[b];
         block[d] += block[a];
-        block[d] = (block[d] << 8) | (block[d] >> 56);
+        block[d] = (block[d] << 8) | (block[d] >>> 56);
 
         block[c] ^= block[d];
         block[b] += block[c];
-        block[b] = (block[b] << 7) | (block[b] >> 57);
+        block[b] = (block[b] << 7) | (block[b] >>> 57);
     }
 
     /**
