@@ -3,8 +3,8 @@ package net.metricspace.crypto.ciphers.stream;
 import java.security.spec.AlgorithmParameterSpec;
 
 /**
- * An {@link AlgorithParameterSpec} subinterface for stream position
- * parameters.
+ * An {@link java.security.spec.AlgorithmParameterSpec} subinterface
+ * for stream position parameters.
  */
 public interface PositionParameterSpec extends AlgorithmParameterSpec {
     /**

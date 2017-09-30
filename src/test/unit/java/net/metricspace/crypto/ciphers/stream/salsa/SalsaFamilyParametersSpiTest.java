@@ -31,41 +31,48 @@
  */
 package net.metricspace.crypto.ciphers.stream.salsa;
 
-import javax.crypto.spec.IvParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-/**
- * An {@link java.security.spec.AlgorithmParameterSpec} implementation
- * for Salsa family ciphers.  This parameter spec contains an IV and a
- * stream position.
- */
-public class SalsaFamilyParameterSpec
-    extends IvParameterSpec
-    implements PositionParameterSpec {
-    /**
-     * The stream position in bytes.
-     */
-    private final long pos;
+public class SalsaFamilyParametersSpiTest {
+    private static final byte[] IV = new byte[] {
+        (byte)3, (byte)1, (byte)4, (byte)1,
+        (byte)5, (byte)9, (byte)2, (byte)6
+    };
 
-    /**
-     * Initialize a {@code SalsaFamilyParameterSpec} with a given IV
-     * and position.
-     *
-     * @param iv The IV.
-     * @param pos The stream position in bytes.
-     */
-    SalsaFamilyParameterSpec(final byte[] iv,
-                             final long pos) {
-        super(iv, 0, SalsaFamilyCipherSpi.IV_LEN);
-        this.pos = pos;
+    private static final long POS = 17;
+
+    private static final SalsaFamilyParameterSpec SPEC =
+        new SalsaFamilyParameterSpec(IV, POS);
+
+    @Test
+    public void engineInitSpecTest()
+        throws InvalidParameterSpecException {
+        final SalsaFamilyParametersSpi spi = new SalsaFamilyParametersSpi();
+
+        spi.engineInit(SPEC);
+
+        final SalsaFamilyParameterSpec specout =
+            spi.engineGetParameterSpec(SalsaFamilyParameterSpec.class);
+
+        Assert.assertEquals(specout.getIV(), SPEC.getIV());
+        Assert.assertEquals(specout.getPosition(), SPEC.getPosition());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getPosition() {
-        return pos;
+    @Test
+    public void engineGetEncodedTest()
+        throws InvalidParameterSpecException {
+        final SalsaFamilyParametersSpi spi = new SalsaFamilyParametersSpi();
+
+        spi.engineInit(SPEC);
+        spi.engineInit(spi.engineGetEncoded());
+
+        final SalsaFamilyParameterSpec specout =
+            spi.engineGetParameterSpec(SalsaFamilyParameterSpec.class);
+
+        Assert.assertEquals(specout.getIV(), SPEC.getIV());
+        Assert.assertEquals(specout.getPosition(), SPEC.getPosition());
     }
 }

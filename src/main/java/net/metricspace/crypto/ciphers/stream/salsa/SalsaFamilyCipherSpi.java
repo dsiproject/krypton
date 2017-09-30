@@ -51,21 +51,37 @@ import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
 
 /**
  * A {@link javax.crypto.CipherSpi} base class for Salsa family
- * ciphers.  This includes Salsa{@code n} as well as ChaCha{@code n}
- * variants.
+ * ciphers.  This includes Salsa{@code N} as well as ChaCha{@code N}
+ * variants.  This provides most of the underlying implementation,
+ * leaving only the round functions up to the variants.
  */
 abstract class SalsaFamilyCipherSpi<K extends
                                           SalsaFamilyCipherSpi.SalsaFamilyKey>
     extends CipherSpi {
+    /**
+     * Length of the initialization vector in bytes.
+     */
     public static final int IV_LEN = 8;
+
+    /**
+     * Length of the key in bits.
+     */
     public static final int KEY_BITS = 256;
+
+    /**
+     * Length of the key in bytes.
+     */
     public static final int KEY_LEN = KEY_BITS / 8;
+
+    /**
+     * Length of the key in 4-byte words.
+     */
     public static final int KEY_WORDS = KEY_BITS / 32;
 
     /**
      * Keys for the Salsa cipher family.
      */
-    public static abstract class SalsaFamilyKey implements SecretKey, Key {
+    static abstract class SalsaFamilyKey implements SecretKey, Key {
         /**
          * The key data.
          */
@@ -136,96 +152,6 @@ abstract class SalsaFamilyCipherSpi<K extends
         }
     }
 
-    public static abstract class SalsaFamilyParametersSpi
-        extends AlgorithmParametersSpi {
-        private SalsaFamilyParameterSpec spec;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected byte[] engineGetEncoded() {
-            final byte[] out = Arrays.copyOf(spec.getIV(), IV_LEN + 8);
-            final long pos = spec.getPosition();
-
-            out[IV_LEN + 0] = (byte)(pos & 0xff);
-            out[IV_LEN + 1] = (byte)((pos >> 8) & 0xff);
-            out[IV_LEN + 2] = (byte)((pos >> 16) & 0xff);
-            out[IV_LEN + 3] = (byte)((pos >> 24) & 0xff);
-            out[IV_LEN + 4] = (byte)((pos >> 32) & 0xff);
-            out[IV_LEN + 5] = (byte)((pos >> 40) & 0xff);
-            out[IV_LEN + 6] = (byte)((pos >> 48) & 0xff);
-            out[IV_LEN + 7] = (byte)((pos >> 56) & 0xff);
-
-            return out;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected byte[] engineGetEncoded(final String format) {
-            return engineGetEncoded();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected <T extends AlgorithmParameterSpec>
-            T engineGetParameterSpec(Class<T> type)
-            throws InvalidParameterSpecException {
-            if (type.equals(SalsaFamilyParameterSpec.class) ||
-                type.equals(PositionParameterSpec.class) ||
-                type.equals(IvParameterSpec.class)) {
-                return (T)spec;
-            } else {
-                throw new InvalidParameterSpecException();
-            }
-
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void engineInit(final AlgorithmParameterSpec spec)
-            throws InvalidParameterSpecException {
-            if (spec instanceof SalsaFamilyParameterSpec) {
-                this.spec = (SalsaFamilyParameterSpec) spec;
-            } else {
-                throw new InvalidParameterSpecException();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void engineInit(final byte[] data) {
-            final long pos =
-                ((long)data[IV_LEN + 0] & 0xffL) |
-                ((long)data[IV_LEN + 1] & 0xffL) << 8 |
-                ((long)data[IV_LEN + 2] & 0xffL) << 16 |
-                ((long)data[IV_LEN + 3] & 0xffL) << 24 |
-                ((long)data[IV_LEN + 4] & 0xffL) << 32 |
-                ((long)data[IV_LEN + 5] & 0xffL) << 40 |
-                ((long)data[IV_LEN + 6] & 0xffL) << 48 |
-                ((long)data[IV_LEN + 7] & 0xffL) << 56;
-
-            spec = new SalsaFamilyParameterSpec(data, pos);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void engineInit(final byte[] data,
-                                  final String format) {
-            engineInit(data);
-        }
-    }
-
     /**
      * The number of words in the cipher state;
      */
@@ -259,7 +185,7 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * The offset into the current stream block that's been used.
      */
-    private int blockOffset;
+    int blockOffset;
 
     /**
      * Get the {@link java.security.spec.AlgorithmParameterSpec} to
@@ -449,7 +375,8 @@ abstract class SalsaFamilyCipherSpi<K extends
      * Throws {@link java.security.NoSuchAlgorithmException}.  Salsa
      * family ciphers are stream ciphers, and do not support padding.
      *
-     * @throws java.security.NoSuchAlgorithmException Always.
+     * @throws javax.crypto.NoSuchPaddingException Unless {@code
+     * "NoPadding"} is specified.
      */
     @Override
     protected final void engineSetPadding(final String padding)
@@ -520,8 +447,6 @@ abstract class SalsaFamilyCipherSpi<K extends
                              final int inputLen,
                              final byte[] output,
                              final int outputOffset) {
-        assert(inputLen < STATE_BYTES - blockOffset);
-
         for(int i = 0; i < inputLen; i++) {
             final int shift = (blockOffset % 4) * 8;
             final int blockWord = blockOffset / 4;
@@ -533,14 +458,13 @@ abstract class SalsaFamilyCipherSpi<K extends
         }
     }
 
-
     /**
      * Compute all cipher rounds on {@code block}.
      */
     protected abstract void rounds();
 
     /**
-     * Compute the next stream block.
+     * Compute the current stream block.
      */
     void streamBlock() {
         initBlock();
@@ -549,12 +473,12 @@ abstract class SalsaFamilyCipherSpi<K extends
     }
 
     /**
-     * Compute the next stream block.
+     * Advance to the next stream block and compute it.
      */
     private void nextBlock() {
-        streamBlock();
         blockIdx++;
         blockOffset = 0;
+        streamBlock();
     }
 
     /**

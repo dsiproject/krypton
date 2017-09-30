@@ -52,7 +52,7 @@ public class KryptonProviderTest {
         KryptonProvider.register();
     }
 
-    @BeforeClass
+    @AfterClass
     public static void fini() {
         KryptonProvider.unregister();
     }

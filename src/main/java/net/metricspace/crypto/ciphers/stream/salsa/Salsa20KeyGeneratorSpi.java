@@ -35,6 +35,15 @@ import javax.crypto.SecretKey;
 
 /**
  * A key generate for the Salsa20 cipher.
+ * <h2>Usage</h2>
+ *
+ * This class should not be used directly.  It provides the underlying
+ * implementation for the Java Cryptography Architecture (JCA).  See
+ * the {@link javax.crypto.KeyGenerator} class documentation for information
+ * on how to use this key generator.
+ *
+ * @see net.metricspace.crypto.providers.KryptonProvider
+ * @see javax.crypto.KeyGenerator
  */
 public final class Salsa20KeyGeneratorSpi extends SalsaFamilyKeyGeneratorSpi {
     /**

@@ -45,7 +45,15 @@ import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
  * Salsa family ciphers.
  */
 public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
-    private SalsaFamilyParameterSpec spec;
+    /**
+     * The initialization vector.
+     */
+    private final byte[] iv = new byte[SalsaFamilyCipherSpi.IV_LEN];
+
+    /**
+     * The stream position in bytes.
+     */
+    private long pos;
 
     /**
      * {@inheritDoc}
@@ -53,8 +61,7 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
     @Override
     protected byte[] engineGetEncoded() {
         final int posstart = SalsaFamilyCipherSpi.IV_LEN;
-        final long pos = spec.getPosition();
-        final byte[] out = Arrays.copyOf(spec.getIV(), posstart + 8);
+        final byte[] out = Arrays.copyOf(iv, posstart + 8);
 
         out[posstart] = (byte)(pos & 0xffL);
         out[posstart + 1] = (byte)((pos >> 8) & 0xffL);
@@ -77,7 +84,19 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
     }
 
     /**
-     * {@inheritDoc}
+     * Get a {@link SalsaFamilyParameterSpec} instance describing
+     * these parameters.  Valid arguments are {@link
+     * SalsaFamilyParameterSpec}, {@link PositionParameterSpec}, or
+     * {@link IvParameterSpec}.  A {@link SalsaFamilyParameterSpec}
+     * instance is returned regardless, as {@link
+     * SalsaFamilyParameterSpec} extends both {@link
+     * PositionParameterSpec} and {@link IvParameterSpec}
+     *
+     * @param paramSpec Either {@link SalsaFamilyParameterSpec},
+     *                  {@link PositionParameterSpec}, or {@link
+     *                  IvParameterSpec}.
+     * @return A {@link SalsaFamilyParameterSpec} instance describing
+     * these parameters
      */
     @Override
     protected <T extends AlgorithmParameterSpec>
@@ -86,24 +105,54 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
         if (paramSpec.equals(SalsaFamilyParameterSpec.class) ||
             paramSpec.equals(PositionParameterSpec.class) ||
             paramSpec.equals(IvParameterSpec.class)) {
-            return (T)spec;
+            return (T) new SalsaFamilyParameterSpec(iv, pos);
         } else {
             throw new InvalidParameterSpecException();
         }
     }
 
-    private void engineInit(final SalsaFamilyParameterSpec spec) {
-        this.spec = spec;
+    /**
+     * Set the parameters from raw values.
+     *
+     * @param iv The IV.
+     * @param pos The position in bytes.
+     */
+    private void engineInit(final byte[] iv,
+                            final long pos) {
+        for(int i = 0; i < SalsaFamilyCipherSpi.IV_LEN; i++) {
+            this.iv[i] = iv[i];
+        }
+
+        this.pos = pos;
     }
 
     /**
-     * {@inheritDoc}
+     * Fully initialize the parameters.
+     *
+     * @param spec The parameter spec.
+     */
+    private void engineInit(final SalsaFamilyParameterSpec spec) {
+        engineInit(spec.getIV(), spec.getPosition());
+    }
+
+    /**
+     * Initialize the parameters from a parameter spec.  If {@code
+     * spec} is an instance of {@link SalsaFamilyParameterSpec}, then
+     * the parameters are fully initialized with an IV and position.
+     * Otherwise, if {@code spec} is an instance of {@link
+     * IvParameterSpec}, then the IV is initialized from {@code spec}
+     * and the position is initialized to 0.
+     *
+     * @param spec Either a {@link SalsaFamilyParameterSpec} or an
+     *             {@link IvParameterSpec}
      */
     @Override
     protected void engineInit(final AlgorithmParameterSpec spec)
         throws InvalidParameterSpecException {
         if (spec instanceof SalsaFamilyParameterSpec) {
             engineInit((SalsaFamilyParameterSpec)spec);
+        } else if (spec instanceof IvParameterSpec) {
+            engineInit((IvParameterSpec)spec.getIV(), 0);
         } else {
             throw new InvalidParameterSpecException();
         }
@@ -116,12 +165,12 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
     protected void engineInit(final byte[] data) {
         final int posstart = SalsaFamilyCipherSpi.IV_LEN;
         final long pos =
-            (long)data[posstart] | (long)data[posstart] << 8 |
-            (long)data[posstart] << 16 | (long)data[posstart] << 24 |
-            (long)data[posstart] << 32 | (long)data[posstart] << 40 |
-            (long)data[posstart] << 48 | (long)data[posstart] << 56;
+            (long)data[posstart] | (long)data[posstart + 1] << 8 |
+            (long)data[posstart + 2] << 16 | (long)data[posstart + 3] << 24 |
+            (long)data[posstart + 4] << 32 | (long)data[posstart + 5] << 40 |
+            (long)data[posstart + 6] << 48 | (long)data[posstart + 7] << 56;
 
-        engineInit(new SalsaFamilyParameterSpec(data, pos));
+        engineInit(data, pos);
     }
 
     /**
@@ -138,17 +187,15 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
      */
     @Override
     protected String engineToString() {
-        final byte[] iv = spec.getIV();
         final StringBuilder sb = new StringBuilder();
 
         sb.append("pos: ");
-        sb.append(spec.getPosition());
+        sb.append(pos);
         sb.append(" iv: ");
 
         for(int i = 0; i < iv.length; i++) {
             sb.append(String.format("%02x", iv[i]));
         }
-        sb.append(spec.getPosition());
 
         return sb.toString();
     }

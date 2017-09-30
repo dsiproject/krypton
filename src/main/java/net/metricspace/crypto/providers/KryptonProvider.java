@@ -51,6 +51,24 @@ import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
  * If the security of an algorithm in the curated set is considered
  * likely to be compromised, it will be demoted to the deprecated set
  * and dropped from the curated set.
+ * <p>
+ * The curated set consists of the following algorithms:
+ * <p>
+ * <b>Stream Ciphers</b>
+ * <ul>
+ * <li> Salsa20
+ *      ({@link net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi})
+ * <li> ChaCha20
+ *      ({@link net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi})
+ * </ul>
+ * <p>
+ * See the corresponding Spi class documentation for each cipher for
+ * additional information.
+ * <p>
+ * For each stream cipher, there are {@code Cipher}.<i>algName</i>,
+ * {@code AlgorithmParameters}.<i>algName</i>,
+ * {@code AlgorithmParameterGenerator}.<i>algName</i>, and
+ * {@code KeyGenerator}.<i>algName</i> instances.
  *
  * @see net.metricspace.crypto.providers.KryptonProviderDeprecated
  * @see net.metricspace.crypto.providers.KryptonProviderExperimental

@@ -41,6 +41,16 @@ import net.metricspace.crypto.providers.KryptonProvider;
 /**
  * A {@link java.security.AlgorithmParameterGeneratorSpi} instance
  * for the Salsa20 cipher.
+ * <h2>Usage</h2>
+ *
+ * This class should not be used directly.  It provides the underlying
+ * implementation for the Java Cryptography Architecture (JCA).  See
+ * the {@link java.security.AlgorithmParameterGenerator} class
+ * documentation for information on how to use this parameter
+ * generator.
+ *
+ * @see net.metricspace.crypto.providers.KryptonProvider
+ * @see java.security.AlgorithmParameterGenerator
  */
 public final class Salsa20ParameterGeneratorSpi
     extends SalsaFamilyParameterGeneratorSpi {

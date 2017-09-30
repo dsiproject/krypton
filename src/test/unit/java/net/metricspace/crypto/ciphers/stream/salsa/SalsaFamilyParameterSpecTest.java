@@ -31,41 +31,23 @@
  */
 package net.metricspace.crypto.ciphers.stream.salsa;
 
-import javax.crypto.spec.IvParameterSpec;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
+public class SalsaFamilyParameterSpecTest {
+    private static final byte[] IV = new byte[] {
+        (byte)3, (byte)1, (byte)4, (byte)1,
+        (byte)5, (byte)9, (byte)2, (byte)6
+    };
 
-/**
- * An {@link java.security.spec.AlgorithmParameterSpec} implementation
- * for Salsa family ciphers.  This parameter spec contains an IV and a
- * stream position.
- */
-public class SalsaFamilyParameterSpec
-    extends IvParameterSpec
-    implements PositionParameterSpec {
-    /**
-     * The stream position in bytes.
-     */
-    private final long pos;
+    private static final long POS = 17;
 
-    /**
-     * Initialize a {@code SalsaFamilyParameterSpec} with a given IV
-     * and position.
-     *
-     * @param iv The IV.
-     * @param pos The stream position in bytes.
-     */
-    SalsaFamilyParameterSpec(final byte[] iv,
-                             final long pos) {
-        super(iv, 0, SalsaFamilyCipherSpi.IV_LEN);
-        this.pos = pos;
-    }
+    @Test
+    public static void constructorTest() {
+        final SalsaFamilyParameterSpec spec =
+            new SalsaFamilyParameterSpec(IV, POS);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getPosition() {
-        return pos;
+        Assert.assertEquals(spec.getIV(), IV);
+        Assert.assertEquals(spec.getPosition(), POS);
     }
 }

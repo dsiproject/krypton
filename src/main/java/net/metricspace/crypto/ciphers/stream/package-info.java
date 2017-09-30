@@ -29,43 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.ciphers.stream.salsa;
-
-import javax.crypto.spec.IvParameterSpec;
-
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
 
 /**
- * An {@link java.security.spec.AlgorithmParameterSpec} implementation
- * for Salsa family ciphers.  This parameter spec contains an IV and a
- * stream position.
+ * Implementations of stream ciphers.  These ciphers generally work by
+ * producing an unpredictable random stream of bytes which are used as
+ * an XOR pad to both encrypt and decrypt data.
+ * <p>
+ * Stream ciphers do not use input to generate the cipher stream;
+ * thus, their security is compromised if the same cipher stream is
+ * used to encrypt multiple data streams.  Similarly, the XOR
+ * transform is vulnerable to bit manipulation by an attacker, unless
+ * the message is also protected by some form of message
+ * authentication code (MAC).
  */
-public class SalsaFamilyParameterSpec
-    extends IvParameterSpec
-    implements PositionParameterSpec {
-    /**
-     * The stream position in bytes.
-     */
-    private final long pos;
-
-    /**
-     * Initialize a {@code SalsaFamilyParameterSpec} with a given IV
-     * and position.
-     *
-     * @param iv The IV.
-     * @param pos The stream position in bytes.
-     */
-    SalsaFamilyParameterSpec(final byte[] iv,
-                             final long pos) {
-        super(iv, 0, SalsaFamilyCipherSpi.IV_LEN);
-        this.pos = pos;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getPosition() {
-        return pos;
-    }
-}
+package net.metricspace.crypto.ciphers.stream;

@@ -34,8 +34,6 @@ package net.metricspace.crypto.ciphers.stream.salsa;
 import java.security.AlgorithmParameters;
 
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class SalsaCipherSpiTest {
@@ -80,11 +78,6 @@ public class SalsaCipherSpiTest {
             return "Test";
         }
 
-    }
-
-    @Test
-    public static void keyTest() {
-        Assert.assertEquals(KEY.getEncoded(), KEY_EXPECTED);
     }
 
     @Test
