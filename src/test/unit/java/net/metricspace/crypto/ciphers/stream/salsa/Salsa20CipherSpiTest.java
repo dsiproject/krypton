@@ -74,13 +74,6 @@ public class Salsa20CipherSpiTest {
     private static final int POS =
         (BLOCK_IDX * SalsaFamilyCipherSpi.STATE_BYTES) + BLOCK_OFFSET;
 
-    private static final int[] EXPECTED = new int[] {
-        0xb9a205a3, 0x0695e150, 0xaa94881a, 0xadb7b12c,
-        0x798942d4, 0x26107016, 0x64edb1a4, 0x2d27173f,
-        0xb1c7f1fa, 0x62066edc, 0xe035fa23, 0xc4496f04,
-        0x2131e6b3, 0x810bde28, 0xf62cb407, 0x6bdede3d
-    };
-
     private static final byte[] TEST_DATA = new byte[256];
 
     private static final byte[] TEST_EXPECTED = new byte[] {
@@ -181,17 +174,6 @@ public class Salsa20CipherSpiTest {
     @Test
     public static void keyTest() {
         Assert.assertEquals(KEY.getEncoded(), KEY_EXPECTED);
-    }
-
-    @Test
-    public static void doubleRoundTest() {
-        final Salsa20CipherSpi spi = makeTestInstance();
-
-        spi.streamBlock();
-
-        for(int i = 0; i < EXPECTED.length; i++) {
-            Assert.assertEquals(spi.block[i], EXPECTED[i]);
-        }
     }
 
     @Test

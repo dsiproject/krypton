@@ -34,9 +34,9 @@ package net.metricspace.crypto.ciphers.stream.salsa;
 /**
  * A {@link javax.crypto.CipherSpi} base class for ChaCha{@code N}
  * variants.  ChaCha is a sub-family of the Salsa family, introduced
- * by Daniel J. Bernstein.  ChaCha shares the basic structure of
- * Salsa, but aims to improve on both diffusion and performance.  The
- * ChaCha20 variant is used frequently in the modern open-source
+ * by Daniel J. Bernstein in 2008.  ChaCha shares the basic structure
+ * of Salsa, but aims to improve on both diffusion and performance.
+ * The ChaCha20 variant is used frequently in the modern open-source
  * community.
  * <h2>Usage</h2>
  *
@@ -77,20 +77,20 @@ public abstract class ChaChaCipherSpi<K extends
                                     final int c,
                                     final int d,
                                     final int[] block) {
-        block[a] ^= block[b];
-        block[d] += block[a];
+        block[a] += block[b];
+        block[d] ^= block[a];
         block[d] = (block[d] << 16) | (block[d] >>> 48);
 
-        block[c] ^= block[d];
-        block[b] += block[c];
+        block[c] += block[d];
+        block[b] ^= block[c];
         block[b] = (block[b] << 12) | (block[b] >>> 52);
 
-        block[a] ^= block[b];
-        block[d] += block[a];
+        block[a] += block[b];
+        block[d] ^= block[a];
         block[d] = (block[d] << 8) | (block[d] >>> 56);
 
-        block[c] ^= block[d];
-        block[b] += block[c];
+        block[c] += block[d];
+        block[b] ^= block[c];
         block[b] = (block[b] << 7) | (block[b] >>> 57);
     }
 
@@ -106,5 +106,51 @@ public abstract class ChaChaCipherSpi<K extends
         quarterRound(1, 6, 11, 12, block);
         quarterRound(2, 7, 8, 13, block);
         quarterRound(3, 4, 9, 14, block);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void addBlock() {
+        block[0] += 0x61707865;
+        block[1] += 0x3320646e;
+        block[2] += 0x79622d32;
+        block[3] += 0x6b206574;
+        block[4] += key.data[0];
+        block[5] += key.data[1];
+        block[6] += key.data[2];
+        block[7] += key.data[3];
+        block[8] += key.data[4];
+        block[9] += key.data[5];
+        block[10] += key.data[6];
+        block[11] += key.data[7];
+        block[12] += (int)(blockIdx & 0xffffffffL);
+        block[13] += (int)((blockIdx >> 32) & 0xffffffffL);
+        block[14] += iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
+        block[15] += iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void initBlock() {
+        block[0] = 0x61707865;
+        block[1] = 0x3320646e;
+        block[2] = 0x79622d32;
+        block[3] = 0x6b206574;
+        block[4] = key.data[0];
+        block[5] = key.data[1];
+        block[6] = key.data[2];
+        block[7] = key.data[3];
+        block[8] = key.data[4];
+        block[9] = key.data[5];
+        block[10] = key.data[6];
+        block[11] = key.data[7];
+        block[12] = (int)(blockIdx & 0xffffffffL);
+        block[13] = (int)((blockIdx >> 32) & 0xffffffffL);
+        block[14] = iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
+        block[15] = iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
     }
 }

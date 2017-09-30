@@ -289,23 +289,33 @@ abstract class SalsaFamilyCipherSpi<K extends
                                     final SecureRandom random)
         throws InvalidKeyException, InvalidAlgorithmParameterException {
 
+        final long pos;
+        final byte[] iv;
+
         if (spec instanceof SalsaFamilyParameterSpec) {
             final SalsaFamilyParameterSpec salsaSpec =
                 (SalsaFamilyParameterSpec)spec;
-            final byte[] iv = salsaSpec.getIV();
 
-            for(int i = 0; i < IV_LEN; i++) {
-                this.iv[i] = iv[i];
-            }
+            iv = salsaSpec.getIV();
+            pos = salsaSpec.getPosition();
+        } else if (spec instanceof IvParameterSpec) {
+            final IvParameterSpec ivSpec = (IvParameterSpec)spec;
 
-            try {
-                init((K)key, salsaSpec.getPosition());
-            } catch(final ClassCastException e) {
-                throw new InvalidKeyException("Cannot accept key for " +
-                                              key.getAlgorithm());
-            }
+            iv = ivSpec.getIV();
+            pos = 0;
         } else {
             throw new InvalidAlgorithmParameterException();
+        }
+
+        for(int i = 0; i < IV_LEN; i++) {
+            this.iv[i] = iv[i];
+        }
+
+        try {
+            init((K)key, pos);
+        } catch(final ClassCastException e) {
+            throw new InvalidKeyException("Cannot accept key for " +
+                                          key.getAlgorithm());
         }
     }
 
@@ -466,7 +476,7 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * Compute the current stream block.
      */
-    void streamBlock() {
+    final void streamBlock() {
         initBlock();
         rounds();
         addBlock();
@@ -484,44 +494,10 @@ abstract class SalsaFamilyCipherSpi<K extends
     /**
      * Add the initial block state to the final state.
      */
-    private void addBlock() {
-        block[0] += 0x61707865;
-        block[1] += key.data[0];
-        block[2] += key.data[1];
-        block[3] += key.data[2];
-        block[4] += key.data[3];
-        block[5] += 0x3320646e;
-        block[6] += iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
-        block[7] += iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
-        block[8] += (int)(blockIdx & 0xffffffffL);
-        block[9] += (int)((blockIdx >> 32) & 0xffffffffL);
-        block[10] += 0x79622d32;
-        block[11] += key.data[4];
-        block[12] += key.data[5];
-        block[13] += key.data[6];
-        block[14] += key.data[7];
-        block[15] += 0x6b206574;
-    }
+    protected abstract void addBlock();
 
     /**
      * Initialize the stream block state.
      */
-    void initBlock() {
-        block[0] = 0x61707865;
-        block[1] = key.data[0];
-        block[2] = key.data[1];
-        block[3] = key.data[2];
-        block[4] = key.data[3];
-        block[5] = 0x3320646e;
-        block[6] = iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
-        block[7] = iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
-        block[8] = (int)(blockIdx & 0xffffffffL);
-        block[9] = (int)((blockIdx >> 32) & 0xffffffffL);
-        block[10] = 0x79622d32;
-        block[11] = key.data[4];
-        block[12] = key.data[5];
-        block[13] = key.data[6];
-        block[14] = key.data[7];
-        block[15] = 0x6b206574;
-    }
+    protected abstract void initBlock();
 }

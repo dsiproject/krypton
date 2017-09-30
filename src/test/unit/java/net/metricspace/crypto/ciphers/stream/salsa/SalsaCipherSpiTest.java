@@ -80,10 +80,8 @@ public class SalsaCipherSpiTest {
 
     }
 
-    @Test
-    public static void doubleRoundTest() {
-        final SalsaCipherSpi<TestKey> spi =
-            new SalsaCipherSpi<TestKey>() {
+    private static SalsaCipherSpi<TestKey> cipherInstance() {
+        return new SalsaCipherSpi<TestKey>() {
                 @Override
                 protected void rounds() {}
 
@@ -101,12 +99,35 @@ public class SalsaCipherSpiTest {
                     }
                 }
             };
+    }
+
+    @Test
+    public static void doubleRoundTest() {
+        final SalsaCipherSpi<TestKey> spi = cipherInstance();
 
         spi.initBlock();
         spi.doubleRound();
 
         for(int i = 0; i < EXPECTED.length; i++) {
             Assert.assertEquals(spi.block[i], EXPECTED[i]);
+        }
+    }
+
+    private static final int[] INIT_EXPECTED = new int[] {
+        0x61707865, 0x04030201, 0x08070605, 0x0c0b0a09,
+        0x100f0e0d, 0x3320646e, 0x01040103, 0x06020905,
+        0x00000007, 0x00000000, 0x79622d32, 0x14131211,
+        0x18171615, 0x1c1b1a19, 0x201f1e1d, 0x6b206574
+    };
+
+    @Test
+    public static void initBlockTest() {
+        final SalsaFamilyCipherSpi<TestKey> spi = cipherInstance();
+
+        spi.initBlock();
+
+        for(int i = 0; i < INIT_EXPECTED.length; i++) {
+            Assert.assertEquals(spi.block[i], INIT_EXPECTED[i]);
         }
     }
 }

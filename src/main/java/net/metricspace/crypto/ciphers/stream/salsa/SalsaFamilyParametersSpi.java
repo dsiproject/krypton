@@ -152,7 +152,7 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
         if (spec instanceof SalsaFamilyParameterSpec) {
             engineInit((SalsaFamilyParameterSpec)spec);
         } else if (spec instanceof IvParameterSpec) {
-            engineInit((IvParameterSpec)spec.getIV(), 0);
+            engineInit(((IvParameterSpec)spec).getIV(), 0);
         } else {
             throw new InvalidParameterSpecException();
         }

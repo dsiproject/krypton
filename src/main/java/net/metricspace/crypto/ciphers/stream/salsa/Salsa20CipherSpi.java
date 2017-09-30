@@ -41,7 +41,8 @@ import net.metricspace.crypto.providers.KryptonProvider;
 /**
  * A {@link javax.crypto.CipherSpi} implementation for the Salsa20
  * cipher.  Salsa20 is the 20-round version of the Salsa cipher
- * introduced by Daniel J. Bernstein for the eSTREAM competition.
+ * introduced by Daniel J. Bernstein in 2007 for the eSTREAM
+ * competition.
  * <h2>Usage</h2>
  *
  * This class should not be used directly.  It provides the underlying

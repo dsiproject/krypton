@@ -41,8 +41,8 @@ import net.metricspace.crypto.providers.KryptonProvider;
 /**
  * A {@link javax.crypto.CipherSpi} implementation for the ChaCha20
  * cipher. ChaCha20 is the 20-round version of the ChaCha family
- * introduced by Daniel J. Bernstein.  ChaCha20 is used frequently in
- * the modern open-source community.
+ * introduced by Daniel J. Bernstein in 2008.  ChaCha20 is used
+ * frequently in the modern open-source community.
  * <h2>Usage</h2>
  *
  * This class should not be used directly.  It provides the underlying
