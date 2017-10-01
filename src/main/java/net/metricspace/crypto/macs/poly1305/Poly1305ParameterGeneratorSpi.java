@@ -31,6 +31,19 @@
  */
 package net.metricspace.crypto.macs.poly1305;
 
+import java.security.AlgorithmParameters;
+import java.security.AlgorithmParameterGeneratorSpi;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+
+import javax.crypto.spec.IvParameterSpec;
+
+import net.metricspace.crypto.providers.KryptonProvider;
+
 /**
  * A {@link java.security.AlgorithmParameterGeneratorSpi} instance
  * for the Poly1305 MAC.
@@ -48,6 +61,11 @@ package net.metricspace.crypto.macs.poly1305;
 public class Poly1305ParameterGeneratorSpi
     extends AlgorithmParameterGeneratorSpi {
     /**
+     * The random source.
+     */
+    private SecureRandom random;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -59,10 +77,11 @@ public class Poly1305ParameterGeneratorSpi
             random.nextBytes(iv);
             out = AlgorithmParameters.getInstance(Poly1305MacSpi.NAME,
                                                   KryptonProvider.NAME);
-            out.init(new IvParameterSpec(iv, pos));
+            out.init(new IvParameterSpec(iv));
 
             return out;
         } catch(final NoSuchProviderException |
+                      NoSuchAlgorithmException |
                       InvalidParameterSpecException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -89,7 +108,7 @@ public class Poly1305ParameterGeneratorSpi
      */
     @Override
     protected final void engineInit(final AlgorithmParameterSpec spec,
-                                    final SecureRandom random)
+                                    final SecureRandom random) {
         this.random = random;
     }
 }

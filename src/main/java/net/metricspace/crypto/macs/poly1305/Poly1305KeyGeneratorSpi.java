@@ -31,10 +31,13 @@
  */
 package net.metricspace.crypto.macs.poly1305;
 
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.SecureRandom;
 
 import javax.crypto.KeyGeneratorSpi;
 import javax.crypto.SecretKey;
+
+import net.metricspace.crypto.providers.KryptonProvider;
 
 /**
  * A key generate for the Poly1305 MAC.  This generator produces keys
@@ -61,8 +64,8 @@ public class Poly1305KeyGeneratorSpi extends KeyGeneratorSpi {
      * {@inheritDoc}
      */
     @Override
-    protected Poly1305CipherSpi.Poly1305Key engineGenerateKey() {
-        final byte[] data = new byte[Poly1305CipherSpi.KEY_LEN];
+    protected Poly1305MacSpi.Poly1305Key engineGenerateKey() {
+        final byte[] data = new byte[Poly1305MacSpi.KEY_LEN];
 
         random.nextBytes(data);
 
@@ -74,6 +77,8 @@ public class Poly1305KeyGeneratorSpi extends KeyGeneratorSpi {
         data[11] &= 0x0f;
         data[12] &= 0xfc;
         data[15] &= 0x0f;
+
+        return new Poly1305MacSpi.Poly1305Key(data);
     }
 
     /**

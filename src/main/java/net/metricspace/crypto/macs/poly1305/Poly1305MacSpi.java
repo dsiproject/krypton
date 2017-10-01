@@ -37,6 +37,10 @@
 package net.metricspace.crypto.macs.poly1305;
 
 import java.security.Key;
+import java.security.InvalidKeyException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.spec.AlgorithmParameterSpec;
+import java.util.Arrays;
 
 import javax.crypto.MacSpi;
 import javax.crypto.SecretKey;
@@ -154,7 +158,7 @@ public final class Poly1305MacSpi extends MacSpi {
          */
         @Override
         public final byte[] getEncoded() {
-            return Arrays.copyOf(data, KEY_LEN);;
+            return Arrays.copyOf(data, KEY_LEN);
         }
     }
 
@@ -166,7 +170,7 @@ public final class Poly1305MacSpi extends MacSpi {
     /**
      * The initialization vector.
      */
-    private final byte[] iv = new byte[];
+    private final byte[] iv = new byte[IV_LEN];
 
     /**
      * Input buffer to get 16-byte chunks of data.
@@ -205,7 +209,8 @@ public final class Poly1305MacSpi extends MacSpi {
      */
     @Override
     protected void engineInit(final Key key,
-                              final AlgorithmParameterSpec params) {
+                              final AlgorithmParameterSpec params)
+        throws InvalidAlgorithmParameterException, InvalidKeyException {
         if (params instanceof IvParameterSpec) {
             final IvParameterSpec ivspec = (IvParameterSpec)params;
             final byte[] iv = ivspec.getIV();
@@ -235,7 +240,7 @@ public final class Poly1305MacSpi extends MacSpi {
             processBlock();
         }
 
-        buf[offset] = input;
+        block[offset] = input;
         offset++;
     }
 
@@ -244,29 +249,46 @@ public final class Poly1305MacSpi extends MacSpi {
      */
     @Override
     protected void engineUpdate(final byte[] input,
-                                final int offset,
-                                final int len) {
-        for(int i = offset; i < offset + len;) {
-            final int inputRemaining = len - i;
+                                final int inputOffset,
+                                final int inputLen) {
+        for(int i = inputOffset; i < inputOffset + inputLen;) {
+            final int inputRemaining = inputLen - i;
             final int blockRemaining = BLOCK_LEN - offset;
             final int groupLen;
 
             if (inputRemaining < blockRemaining) {
                 groupLen = inputRemaining;
 
-                for(; offset < BLOCK_LEN; i++, offset++) {
-                    block[j] = input[i];
+                for(int j = 0; j < groupLen; i++, j++, offset++) {
+                    block[offset] = input[i];
                 }
             } else {
                 groupLen = blockRemaining;
 
-                for(; offset < BLOCK_LEN; i++, offset++) {
-                    block[j] = input[i];
+                for(int j = 0; j < groupLen; i++, j++, offset++) {
+                    block[offset] = input[i];
                 }
 
                 processBlock();
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void engineReset() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected byte[] engineDoFinal() {
+        final byte[] out = new byte[TAG_LEN];
+
+        return out;
     }
 
     private void processBlock() {

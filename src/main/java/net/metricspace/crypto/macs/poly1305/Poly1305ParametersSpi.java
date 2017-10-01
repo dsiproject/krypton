@@ -38,8 +38,6 @@ import java.util.Arrays;
 
 import javax.crypto.spec.IvParameterSpec;
 
-import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
-
 /**
  * The {@link java.security.AlgorithmParametersSpi} implementation for
  * the Poly1305 MAC.
@@ -48,14 +46,14 @@ public class Poly1305ParametersSpi extends AlgorithmParametersSpi {
     /**
      * The initialization vector.
      */
-    private final byte[] iv = new byte[SalsaFamilyCipherSpi.IV_LEN];
+    private final byte[] iv = new byte[Poly1305MacSpi.IV_LEN];
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected byte[] engineGetEncoded() {
-        return Arrays.copyOf(iv, SalsaFamilyCipherSpi.IV_LEN);
+        return Arrays.copyOf(iv, Poly1305MacSpi.IV_LEN);
     }
 
     /**
@@ -79,7 +77,7 @@ public class Poly1305ParametersSpi extends AlgorithmParametersSpi {
         T engineGetParameterSpec(final Class<T> paramSpec)
         throws InvalidParameterSpecException {
         if (paramSpec.equals(IvParameterSpec.class)) {
-            return (T) new IvParameterSpec(iv, pos);
+            return (T) new IvParameterSpec(iv);
         } else {
             throw new InvalidParameterSpecException();
         }
@@ -105,7 +103,7 @@ public class Poly1305ParametersSpi extends AlgorithmParametersSpi {
     protected void engineInit(final AlgorithmParameterSpec spec)
         throws InvalidParameterSpecException {
         if (spec instanceof IvParameterSpec) {
-            engineInit(((IvParameterSpec)spec).getIV(), 0);
+            engineInit(((IvParameterSpec)spec).getIV());
         } else {
             throw new InvalidParameterSpecException();
         }
@@ -116,7 +114,7 @@ public class Poly1305ParametersSpi extends AlgorithmParametersSpi {
      */
     @Override
     protected void engineInit(final byte[] data) {
-        for(int i = 0; i < SalsaFamilyCipherSpi.IV_LEN; i++) {
+        for(int i = 0; i < Poly1305MacSpi.IV_LEN; i++) {
             this.iv[i] = iv[i];
         }
     }
