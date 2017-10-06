@@ -55,8 +55,8 @@ import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
  * variants.  This provides most of the underlying implementation,
  * leaving only the round functions up to the variants.
  */
-abstract class SalsaFamilyCipherSpi<K extends
-                                          SalsaFamilyCipherSpi.SalsaFamilyKey>
+abstract class
+    SalsaFamilyCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
     extends CipherSpi {
     /**
      * Length of the initialization vector in bytes.
@@ -420,7 +420,7 @@ abstract class SalsaFamilyCipherSpi<K extends
                                      final int inputLen,
                                      final byte[] output,
                                      final int outputOffset) {
-        for(int i = inputOffset; i < inputLen;) {
+        for(int i = inputOffset; i < inputOffset + inputLen;) {
             final int inputRemaining = inputLen - i;
             final int blockRemaining = STATE_BYTES - blockOffset;
             final int groupLen;

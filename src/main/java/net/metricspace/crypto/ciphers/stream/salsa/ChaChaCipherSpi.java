@@ -68,8 +68,8 @@ package net.metricspace.crypto.ciphers.stream.salsa;
  * @see net.metricspace.crypto.providers.KryptonProvider
  * @see javax.crypto.Cipher
  */
-public abstract class ChaChaCipherSpi<K extends
-                                            SalsaFamilyCipherSpi.SalsaFamilyKey>
+public abstract class
+    ChaChaCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
     extends SalsaFamilyCipherSpi<K> {
 
     public static void quarterRound(final int a,
