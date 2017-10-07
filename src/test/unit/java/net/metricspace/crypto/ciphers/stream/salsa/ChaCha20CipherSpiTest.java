@@ -107,7 +107,7 @@ public class ChaCha20CipherSpiTest {
         Assert.assertEquals(KEY.getEncoded(), KEY_EXPECTED);
         Assert.assertEquals(FROM_BYTES.getEncoded(), KEY_EXPECTED);
     }
-    /*
+
     @Test
     public static void getParametersTest()
         throws InvalidKeyException, InvalidAlgorithmParameterException,
@@ -146,7 +146,7 @@ public class ChaCha20CipherSpiTest {
         Assert.assertEquals(spi.blockIdx, BLOCK_IDX);
         Assert.assertEquals(spi.blockOffset, BLOCK_OFFSET);
     }
-    */
+
     private static final ChaCha20CipherSpi.Key IETF_KEY0 =
         new ChaCha20CipherSpi.Key(new int[] {
                 0x00000000, 0x00000000, 0x00000000, 0x00000000,
