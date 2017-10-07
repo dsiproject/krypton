@@ -98,6 +98,40 @@ abstract class
         }
 
         /**
+         * Initialize this key with the given byte array.  The byte
+         * array needs to be zeroed out afterwards.
+         *
+         * @param data The key material.
+         */
+        SalsaFamilyKey(final byte[] data) {
+            this.data = new int[KEY_WORDS];
+            this.data[0] =
+                data[0] | data[1] << 8 |
+                data[2] << 16 | data[3] << 24;
+            this.data[1] =
+                data[4] | data[5] << 8 |
+                data[6] << 16 | data[7] << 24;
+            this.data[2] =
+                data[8] | data[9] << 8 |
+                data[10] << 16 | data[11] << 24;
+            this.data[3] =
+                data[12] | data[13] << 8 |
+                data[14] << 16 | data[15] << 24;
+            this.data[4] =
+                data[16] | data[17] << 8 |
+                data[18] << 16 | data[19] << 24;
+            this.data[5] =
+                data[20] | data[21] << 8 |
+                data[22] << 16 | data[23] << 24;
+            this.data[6] =
+                data[24] | data[25] << 8 |
+                data[26] << 16 | data[27] << 24;
+            this.data[7] =
+                data[28] | data[29] << 8 |
+                data[30] << 16 | data[31] << 24;
+        }
+
+        /**
          * Returns the name of the primary encoding format, which is
          * {@code "RAW"}.
          *
