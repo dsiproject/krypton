@@ -43,12 +43,11 @@ import javax.crypto.ShortBufferException;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
-import net.metricspace.crypto.ciphers.JCACipherTest;
+import net.metricspace.crypto.ciphers.stream.StreamCipherJCACipherTest;
 import net.metricspace.crypto.providers.KryptonProvider;
 
-public class ChaCha20JCACipherTest extends JCACipherTest {
+public class ChaCha20JCACipherTest extends StreamCipherJCACipherTest {
     @BeforeClass
     public static void init() {
         KryptonProvider.register();
@@ -63,7 +62,6 @@ public class ChaCha20JCACipherTest extends JCACipherTest {
         super(KryptonProvider.NAME, ChaCha20CipherSpi.NAME, 256, 64);
     }
 
-    @Test
     @Override
     protected void jcaCipherSmokeTest()
         throws ShortBufferException, InvalidKeyException,
