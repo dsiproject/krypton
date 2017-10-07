@@ -34,6 +34,14 @@ package net.metricspace.crypto.providers;
 import java.security.Security;
 import java.security.Provider;
 
+import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20KeyGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20ParameterGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.Salsa20KeyGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.Salsa20ParameterGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
+
 /**
  * The {@link Provider} for curated cryptographic algorithms.
  * Algorithms provided in the curated set are currently considered
@@ -43,6 +51,24 @@ import java.security.Provider;
  * If the security of an algorithm in the curated set is considered
  * likely to be compromised, it will be demoted to the deprecated set
  * and dropped from the curated set.
+ * <p>
+ * The curated set consists of the following algorithms:
+ * <p>
+ * <b>Stream Ciphers</b>
+ * <ul>
+ * <li> Salsa20
+ *      ({@link net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi})
+ * <li> ChaCha20
+ *      ({@link net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi})
+ * </ul>
+ * <p>
+ * See the corresponding Spi class documentation for each cipher for
+ * additional information.
+ * <p>
+ * For each stream cipher, there are {@code Cipher}.<i>algName</i>,
+ * {@code AlgorithmParameters}.<i>algName</i>,
+ * {@code AlgorithmParameterGenerator}.<i>algName</i>, and
+ * {@code KeyGenerator}.<i>algName</i> instances.
  *
  * @see net.metricspace.crypto.providers.KryptonProviderDeprecated
  * @see net.metricspace.crypto.providers.KryptonProviderExperimental
@@ -68,6 +94,22 @@ public final class KryptonProvider extends Provider {
      */
     private KryptonProvider() {
         super(NAME, VERSION, "Krypton curated cipher suite");
+
+        put("KeyGenerator.ChaCha20", ChaCha20KeyGeneratorSpi.class.getName());
+        put("KeyGenerator.Salsa20", Salsa20KeyGeneratorSpi.class.getName());
+
+        put("AlgorithmParameters.ChaCha20",
+            SalsaFamilyParametersSpi.class.getName());
+        put("AlgorithmParameters.Salsa20",
+            SalsaFamilyParametersSpi.class.getName());
+
+        put("AlgorithmParameterGenerator.ChaCha20",
+            ChaCha20ParameterGeneratorSpi.class.getName());
+        put("AlgorithmParameterGenerator.Salsa20",
+            Salsa20ParameterGeneratorSpi.class.getName());
+
+        put("Cipher.ChaCha20", ChaCha20CipherSpi.class.getName());
+        put("Cipher.Salsa20", Salsa20CipherSpi.class.getName());
     }
 
     /**
