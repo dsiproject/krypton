@@ -420,7 +420,7 @@ abstract class
                                      final int inputLen,
                                      final byte[] output,
                                      final int outputOffset) {
-        for(int i = inputOffset; i < inputOffset + inputLen;) {
+        for(int i = 0; i < inputLen;) {
             final int inputRemaining = inputLen - i;
             final int blockRemaining = STATE_BYTES - blockOffset;
             final int groupLen;
