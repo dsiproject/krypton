@@ -67,6 +67,9 @@ public class Salsa20CipherSpiTest {
         (byte)5, (byte)9, (byte)2, (byte)6
     };
 
+    private static final ChaCha20CipherSpi.Key FROM_BYTES =
+        new ChaCha20CipherSpi.Key(KEY_EXPECTED);
+
     private static final int BLOCK_IDX = 7;
 
     private static final int BLOCK_OFFSET = 3;
@@ -174,6 +177,7 @@ public class Salsa20CipherSpiTest {
     @Test
     public static void keyTest() {
         Assert.assertEquals(KEY.getEncoded(), KEY_EXPECTED);
+        Assert.assertEquals(FROM_BYTES.getEncoded(), KEY_EXPECTED);
     }
 
     @Test

@@ -95,6 +95,16 @@ public final class ChaCha20CipherSpi
         }
 
         /**
+         * Initialize this key with the given byte array.  The byte
+         * array needs to be zeroed out afterwards.
+         *
+         * @param data The key material.
+         */
+        Key(final byte[] data) {
+            super(data);
+        }
+
+        /**
          * Returns the string "ChaCha20".
          *
          * @return The string "ChaCha20".

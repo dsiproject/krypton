@@ -64,6 +64,9 @@ public class ChaCha20CipherSpiTest {
         (byte)29, (byte)30, (byte)31, (byte)32
     };
 
+    private static final ChaCha20CipherSpi.Key FROM_BYTES =
+        new ChaCha20CipherSpi.Key(KEY_EXPECTED);
+
     private static final byte[] IV = new byte[] {
         (byte)3, (byte)1, (byte)4, (byte)1,
         (byte)5, (byte)9, (byte)2, (byte)6
@@ -102,6 +105,7 @@ public class ChaCha20CipherSpiTest {
     @Test
     public static void keyTest() {
         Assert.assertEquals(KEY.getEncoded(), KEY_EXPECTED);
+        Assert.assertEquals(FROM_BYTES.getEncoded(), KEY_EXPECTED);
     }
     /*
     @Test
