@@ -11,10 +11,19 @@
   <description>Krypton curated cryptography library</description>
 
   <properties>
+    <jcov.jar>${basedir}/lib/jcov.jar</jcov.jar>
+    <jcov_file_saver.jar>${basedir}/lib/jcov_file_saver.jar</jcov_file_saver.jar>
     <slf4j.version>1.7.21</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <test.unit.srcs>${project.basedir}/src/test/unit/java</test.unit.srcs>
+    <project.build.instr.outputDirectory>${project.build.directory}/instr-classes</project.build.instr.outputDirectory>
+    <jcov.template.xml>${project.build.directory}/template.xml</jcov.template.xml>
+    <jcov.unit.result.xml>${project.build.directory}/unit-result.xml</jcov.unit.result.xml>
+    <jcov.unit.coverage.xml>${project.build.directory}/unit-coverage.xml</jcov.unit.coverage.xml>
+    <test.unit.srcs>src/test/unit/java</test.unit.srcs>
+    <test.unit.classes>target/unit-test-classes</test.unit.classes>
+    <jcov.report.dir>target/coverage</jcov.report.dir>
   </properties>
 
   <dependencies>
@@ -24,19 +33,17 @@
       <version>6.1.1</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-
   </dependencies>
 
   <build>
     <testSourceDirectory>${test.unit.srcs}</testSourceDirectory>
     <plugins>
-
+      <!-- Java compiler configuration -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -44,11 +51,10 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
-          <debug>true</debug>
-          <debuglevel>lines,vars,source</debuglevel>
         </configuration>
       </plugin>
 
+      <!-- JAR plugin configuration -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -62,6 +68,7 @@
         </configuration>
       </plugin>
 
+      <!-- Javadoc configuration -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -71,18 +78,125 @@
         </configuration>
       </plugin>
 
+      <!-- Skip ordinary unit tests and just do integration tests.   -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19</version>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.14</version>
         <configuration>
           <trimStackTrace>false</trimStackTrace>
+          <!-- Use the jcov instrumented class file directory -->
+          <classesDirectory>${project.build.instr.outputDirectory}</classesDirectory>
+          <!-- Add jcov_file_saver.jar to classpath -->
+          <additionalClasspathElements>
+            <additionalClasspathElement>${jcov_file_saver.jar}</additionalClasspathElement>
+          </additionalClasspathElements>
+          <!-- System properties needed by jcov -->
+          <systemPropertyVariables>
+            <jcov.template>${jcov.template.xml}</jcov.template>
+            <jcov.file>${jcov.unit.result.xml}</jcov.file>
+          </systemPropertyVariables>
         </configuration>
+      </plugin>
+
+      <!-- Integration are configured to generate coverage reports -->
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <includes>
+            <!-- Add other suites here when they exist -->
+          </includes>
+          <!-- Use the jcov instrumented class file directory -->
+          <classesDirectory>${project.build.instr.outputDirectory}</classesDirectory>
+          <!-- Add jcov_file_saver.jar to classpath -->
+          <additionalClasspathElements>
+            <additionalClasspathElement>${jcov_file_saver.jar}</additionalClasspathElement>
+          </additionalClasspathElements>
+          <!-- System properties needed by jcov -->
+          <systemPropertyVariables>
+            <jcov.template>${jcov.template.xml}</jcov.template>
+            <jcov.file>${jcov.unit.result.xml}</jcov.file>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Raw execution -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <!-- Instrument the build classes -->
+          <execution>
+            <id>instrument-classes</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>java</executable>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>${jcov.jar}</argument>
+                <argument>Instr</argument>
+                <argument>-t</argument>
+                <argument>${jcov.template.xml}</argument>
+                <argument>-o</argument>
+                <argument>${project.build.instr.outputDirectory}</argument>
+                <argument>${project.build.outputDirectory}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- Merge the unit test results with the template -->
+          <execution>
+            <id>merge-unit-coverage</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>java</executable>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>${jcov.jar}</argument>
+                <argument>Merger</argument>
+                <argument>-o</argument>
+                <argument>${jcov.unit.coverage.xml}</argument>
+                <argument>${jcov.template.xml}</argument>
+                <argument>${jcov.unit.result.xml}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- Generate the coverage reports -->
+          <execution>
+            <id>coverage-report</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>java</executable>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>${jcov.jar}</argument>
+                <argument>RepGen</argument>
+                <argument>-src</argument>
+                <argument>${project.build.sourceDirectory}</argument>
+                <argument>-o</argument>
+                <argument>${jcov.report.dir}</argument>
+                <argument>${jcov.unit.coverage.xml}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -97,13 +211,16 @@
           <show>public</show>
         </configuration>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
         <version>2.19</version>
       </plugin>
-
     </plugins>
   </reporting>
 </project>
