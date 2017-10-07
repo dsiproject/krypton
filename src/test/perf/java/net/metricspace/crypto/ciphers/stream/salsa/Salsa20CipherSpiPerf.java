@@ -30,3 +30,41 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package net.metricspace.crypto.ciphers.stream.salsa;
+
+import java.security.AlgorithmParameters;
+import java.security.InvalidKeyException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidParameterSpecException;
+import java.util.Arrays;
+import java.util.Random;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+
+import net.metricspace.crypto.ciphers.CipherSpiPerf;
+import net.metricspace.crypto.providers.KryptonProvider;
+
+public class Salsa20CipherSpiPerf extends CipherSpiPerf {
+    public Salsa20CipherSpiPerf() {
+        super(SalsaFamilyCipherSpi.KEY_LEN, SalsaFamilyCipherSpi.IV_LEN);
+    }
+
+    @Override
+    protected Cipher getCipher(final byte[] keydata,
+                               final byte[] ivdata)
+        throws InvalidKeyException, NoSuchAlgorithmException,
+               NoSuchProviderException, InvalidAlgorithmParameterException,
+               NoSuchPaddingException {
+        final Cipher out = Cipher.getInstance(Salsa20CipherSpi.NAME,
+                                              KryptonProvider.NAME);
+        final Salsa20CipherSpi.Key key = new Salsa20CipherSpi.Key(keydata);
+        final IvParameterSpec spec = new IvParameterSpec(ivdata);
+
+        out.init(Cipher.ENCRYPT_MODE, key, spec);
+
+        return out;
+    }
+}
