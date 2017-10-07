@@ -23,6 +23,7 @@
     <jcov.unit.coverage.xml>${project.build.directory}/unit-coverage.xml</jcov.unit.coverage.xml>
     <test.unit.srcs>src/test/unit/java</test.unit.srcs>
     <test.unit.classes>target/unit-test-classes</test.unit.classes>
+    <test.perf.dir>src/test/perf/java</test.perf.dir>
     <jcov.report.dir>target/coverage</jcov.report.dir>
   </properties>
 
@@ -37,6 +38,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-core</artifactId>
+      <version>0.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -66,6 +73,27 @@
             </manifestEntries>
           </archive>
         </configuration>
+      </plugin>
+
+      <!-- Extra test sources -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${test.perf.dir}</source>
+               </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Javadoc configuration -->
@@ -104,7 +132,8 @@
         <version>2.12</version>
         <configuration>
           <includes>
-            <!-- Add other suites here when they exist -->
+            <!-- Add the other test suites -->
+            <include>${test.perf.dir}/**/*.java</include>
           </includes>
           <!-- Use the jcov instrumented class file directory -->
           <classesDirectory>${project.build.instr.outputDirectory}</classesDirectory>
@@ -127,7 +156,6 @@
         </executions>
       </plugin>
 
-      <!-- Raw execution -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -150,6 +178,25 @@
                 <argument>-o</argument>
                 <argument>${project.build.instr.outputDirectory}</argument>
                 <argument>${project.build.outputDirectory}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- Run the JMH performance suite -->
+          <execution>
+            <id>perf-tests</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>org.openjdk.jmh.Main</argument>
+                <argument>.*</argument>
               </arguments>
             </configuration>
           </execution>
