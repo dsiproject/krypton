@@ -40,6 +40,8 @@ import java.security.spec.AlgorithmParameterSpec;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import net.metricspace.crypto.ciphers.stream.KeystreamCipherTestUtils;
+
 public class SalsaCipherSpiTest {
     private static final TestKey KEY =
         new TestKey(new int[] {
@@ -152,7 +154,7 @@ public class SalsaCipherSpiTest {
         spi.initBlock();
         spi.doubleRound();
 
-        final int[] block = spi.getBlock();
+        final int[] block = KeystreamCipherTestUtils.getBlock(spi);
 
         for(int i = 0; i < EXPECTED.length; i++) {
             Assert.assertEquals(block[i], EXPECTED[i]);
@@ -172,7 +174,7 @@ public class SalsaCipherSpiTest {
 
         spi.initBlock();
 
-        final int[] block = spi.getBlock();
+        final int[] block = KeystreamCipherTestUtils.getBlock(spi);
 
         for(int i = 0; i < INIT_EXPECTED.length; i++) {
             Assert.assertEquals(block[i], INIT_EXPECTED[i]);
