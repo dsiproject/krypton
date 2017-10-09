@@ -268,6 +268,59 @@ abstract class
     }
 
     /**
+     * Package-private method used for testing
+     */
+    final void setIV(final byte[] iv) {
+        for(int i = 0; i < iv.length; i++) {
+            this.iv[i] = iv[i];
+        }
+    }
+
+    final void setKey(final K key) {
+        this.key = key;
+    }
+
+    final void setBlockIdx(final long blockIdx) {
+        this.blockIdx = blockIdx;
+    }
+
+    final void setBlockOffset(final int blockOffset) {
+        this.blockOffset = blockOffset;
+    }
+
+    final byte[] getIV() {
+        return iv;
+    }
+
+    final int[] getBlock() {
+        return block;
+    }
+
+    final long getBlockIdx() {
+        return blockIdx;
+    }
+
+    final int getBlockOffset() {
+        return blockOffset;
+    }
+
+    final void testEngineInit(final int opmode,
+                              final Key key,
+                              final AlgorithmParameters params,
+                              final SecureRandom random)
+        throws InvalidAlgorithmParameterException, InvalidKeyException {
+        engineInit(opmode, key, params, random);
+    }
+
+    final void testEngineUpdate(final byte[] input,
+                                final int inputOffset,
+                                final int inputLen,
+                                final byte[] output,
+                                final int outputOffset) {
+        engineUpdate(input, inputOffset, inputLen, output, outputOffset);
+    }
+
+    /**
      * Compute all cipher rounds on {@code block}.
      */
     protected abstract void rounds();
