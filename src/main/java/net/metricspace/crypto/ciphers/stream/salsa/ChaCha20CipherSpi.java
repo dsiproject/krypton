@@ -32,8 +32,12 @@
 package net.metricspace.crypto.ciphers.stream.salsa;
 
 import java.security.AlgorithmParameters;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import net.metricspace.crypto.providers.KryptonProvider;
@@ -74,7 +78,7 @@ import net.metricspace.crypto.providers.KryptonProvider;
  * @see javax.crypto.Cipher
  */
 public final class ChaCha20CipherSpi
-    extends ChaChaCipherSpi<ChaCha20CipherSpi.Key> {
+    extends ChaChaCipherSpi<ChaCha20CipherSpi.ChaCha20Key> {
     /**
      * The name of this cipher.
      */
@@ -83,14 +87,14 @@ public final class ChaCha20CipherSpi
     /**
      * Keys for the ChaCha20 cipher.
      */
-    static final class Key extends SalsaFamilyCipherSpi.SalsaFamilyKey {
+    static final class ChaCha20Key extends SalsaFamilyCipherSpi.SalsaFamilyKey {
         /**
          * Initialize this key with the given array.  The key takes
          * possession of the {@code data} array.
          *
          * @param data The key material.
          */
-        Key(final int[] data) {
+        ChaCha20Key(final int[] data) {
             super(data);
         }
 
@@ -100,7 +104,7 @@ public final class ChaCha20CipherSpi
          *
          * @param data The key material.
          */
-        Key(final byte[] data) {
+        ChaCha20Key(final byte[] data) {
             super(data);
         }
 
@@ -112,6 +116,54 @@ public final class ChaCha20CipherSpi
         @Override
         public final String getAlgorithm() {
             return NAME;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void engineInit(final Key key,
+                                    final SalsaFamilyParameterSpec spec)
+        throws InvalidKeyException {
+        try {
+            engineInit((ChaCha20Key)key, spec);
+        } catch(final ClassCastException e) {
+            throw new InvalidKeyException("Cannot accept key for " +
+                                          key.getAlgorithm());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void engineInit(final int opmode,
+                                    final Key key,
+                                    final AlgorithmParameterSpec spec,
+                                    final SecureRandom random)
+        throws InvalidKeyException {
+        try {
+            engineInit(opmode, (ChaCha20Key)key, spec, random);
+        } catch(final ClassCastException e) {
+            throw new InvalidKeyException("Cannot accept key for " +
+                                          key.getAlgorithm());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void engineInit(final int opmode,
+                                    final Key key,
+                                    final SecureRandom random)
+        throws InvalidKeyException {
+        try {
+            engineInit(opmode, (ChaCha20Key)key, random);
+        } catch(final ClassCastException e) {
+            throw new InvalidKeyException("Cannot accept key for " +
+                                          key.getAlgorithm());
         }
     }
 

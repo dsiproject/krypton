@@ -50,7 +50,8 @@ public final class Salsa20KeyGeneratorSpi extends SalsaFamilyKeyGeneratorSpi {
      * {@inheritDoc}
      */
     @Override
-    protected final SecretKey engineGenerateKey(final byte[] data) {
-        return new Salsa20CipherSpi.Key(data);
+    protected final Salsa20CipherSpi.Salsa20Key
+        engineGenerateKey(final byte[] data) {
+        return new Salsa20CipherSpi.Salsa20Key(data);
     }
 }
