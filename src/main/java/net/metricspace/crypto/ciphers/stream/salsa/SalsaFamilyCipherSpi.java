@@ -42,12 +42,12 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
 
-import javax.crypto.CipherSpi;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
+import net.metricspace.crypto.ciphers.stream.SeekableKeystreamCipherSpi;
 
 /**
  * A {@link javax.crypto.CipherSpi} base class for Salsa family
@@ -57,7 +57,7 @@ import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
  */
 abstract class
     SalsaFamilyCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
-    extends CipherSpi {
+    extends SeekableKeystreamCipherSpi<K, SalsaFamilyParameterSpec> {
     /**
      * Length of the initialization vector in bytes.
      */
@@ -197,29 +197,51 @@ abstract class
     protected static final int STATE_BYTES = STATE_WORDS * 4;
 
     /**
-     * The current cipher stream block.
+     * Initialize the cipher engine.
      */
-    protected final int[] block = new int[STATE_WORDS];
+    protected SalsaFamilyCipherSpi() {
+        super(SalsaFamilyParameterSpec.class,
+              new int[STATE_WORDS], new byte[IV_LEN]);
+    }
 
     /**
-     * The initialization vector.
+     * Initialize from a well-typed key and a generally-typed spec.
+     * If {@code spec} is a {@link SalsaFamilyParameterSpec}, both the
+     * IV and position will be initialized.  If {@code spec} is an
+     * {@link IvParameterSpec}, the IV will be initialized and the
+     * position will be set to {@code 0}.  If {@code spec} is a {@link
+     * PositionParameterSpec}, the positior will be initialized and
+     * the IV will be initialized from {@code random}.  Otherwise, an
+     * {@link InvalidAlgorithmparameterException} will be thrown.
+     *
+     * @param key The key.
+     * @param spec The parameter spec.
+     * @throws InvalidAlgorithmparameterException if {@code spec} is
+     * not a {@link SalsaFamilyParameterSpec}, an {@link
+     * IvParameterSpec}, or a {@link PositionParameterSpec}
      */
-    protected final byte[] iv = new byte[IV_LEN];
+    protected final void engineInit(final K key,
+                                    final AlgorithmParameterSpec spec,
+                                    final SecureRandom random)
+        throws InvalidAlgorithmParameterException {
 
-    /**
-     * The current block index.
-     */
-    protected long blockIdx;
+        final long pos;
+        final byte[] iv;
 
-    /**
-     * The key.
-     */
-    protected K key;
+        if (spec instanceof SalsaFamilyParameterSpec) {
+            engineInit(key, (SalsaFamilyParameterSpec)spec);
+        } else if (spec instanceof IvParameterSpec) {
+            engineInit(key, 0, (IvParameterSpec)spec);
+        } else if (spec instanceof PositionParameterSpec) {
+            final PositionParameterSpec ps =
+                (PositionParameterSpec)spec;
 
-    /**
-     * The offset into the current stream block that's been used.
-     */
-    int blockOffset;
+            engineInit(key, ps.getPosition(), random);
+        } else {
+            throw new InvalidAlgorithmParameterException();
+        }
+    }
+
 
     /**
      * Get the {@link java.security.spec.AlgorithmParameterSpec} to
@@ -236,294 +258,19 @@ abstract class
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final byte[] engineDoFinal(final byte[] input,
-                                         final int inputOffset,
-                                         final int inputLen) {
-        final byte[] out = new byte[inputLen];
-
-        engineDoFinal(input, inputOffset, inputLen, out, 0);
-
-        return out;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final int engineDoFinal(final byte[] input,
-                                      final int inputOffset,
-                                      final int inputLen,
-                                      final byte[] output,
-                                      final int outputOffset) {
-        return engineUpdate(input, inputOffset, inputLen, output, outputOffset);
-    }
-
-    /**
-     * Initialize the engine with a key and a random initialization
-     * vector.
-     *
-     * @param opmode Ignored.
-     * @param key The key.
-     * @param random The {@link SecureRandom} to use to generate the
-     *               initialization vector.
-     * @throws InvalidKeyException If {@code key} is not of type {@code K}.
-     */
-    @Override
-    protected final void engineInit(final int opmode,
-                                    final Key key,
-                                    final SecureRandom random)
-        throws InvalidKeyException {
-        try {
-            random.nextBytes(iv);
-            init((K)key, 0);
-        } catch(final ClassCastException e) {
-            throw new InvalidKeyException("Cannot accept key for " +
-                                          key.getAlgorithm());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final void engineInit(final int opmode,
-                                    final Key key,
-                                    final AlgorithmParameters params,
-                                    final SecureRandom random)
-        throws InvalidKeyException, InvalidAlgorithmParameterException {
-        try {
-            final SalsaFamilyParameterSpec spec =
-                params.getParameterSpec(SalsaFamilyParameterSpec.class);
-
-            final byte[] iv = spec.getIV();
-
-            for(int i = 0; i < IV_LEN; i++) {
-                this.iv[i] = iv[i];
-            }
-
-            init((K)key, spec.getPosition());
-        } catch(final ClassCastException e) {
-            throw new InvalidKeyException("Cannot accept key for " +
-                                          key.getAlgorithm());
-        } catch(final InvalidParameterSpecException e) {
-            throw new InvalidAlgorithmParameterException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final void engineInit(final int opmode,
-                                    final Key key,
-                                    final AlgorithmParameterSpec spec,
-                                    final SecureRandom random)
-        throws InvalidKeyException, InvalidAlgorithmParameterException {
-
-        final long pos;
-        final byte[] iv;
-
-        if (spec instanceof SalsaFamilyParameterSpec) {
-            final SalsaFamilyParameterSpec salsaSpec =
-                (SalsaFamilyParameterSpec)spec;
-
-            iv = salsaSpec.getIV();
-            pos = salsaSpec.getPosition();
-        } else if (spec instanceof IvParameterSpec) {
-            final IvParameterSpec ivSpec = (IvParameterSpec)spec;
-
-            iv = ivSpec.getIV();
-            pos = 0;
-        } else {
-            throw new InvalidAlgorithmParameterException();
-        }
-
-        for(int i = 0; i < IV_LEN; i++) {
-            this.iv[i] = iv[i];
-        }
-
-        try {
-            init((K)key, pos);
-        } catch(final ClassCastException e) {
-            throw new InvalidKeyException("Cannot accept key for " +
-                                          key.getAlgorithm());
-        }
-    }
-
-    /**
-     * Internal initialization procedure.
-     *
-     * @param key The key.
-     * @param pos The stream position in bytes.
-     */
-    private void init(final K key,
-                      final long pos) {
-        this.key = key;
-
-        // Figure out the block index and offsets
-        this.blockIdx = pos / STATE_BYTES;
-        this.blockOffset = (int)(pos % STATE_BYTES);
-
-        // Compute the stream block
-        streamBlock();
-    }
-
-    /**
-     * Get the enigne block size.  This is {@code 1} byte, as the
-     * Salsa family are stream ciphers.
-     *
-     * @return {@code 1}.
-     */
-    @Override
-    protected final int engineGetBlockSize() {
-        return 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final byte[] engineGetIV() {
-        return Arrays.copyOf(iv, IV_LEN);
-    }
-
-    /**
-     * Returns {@code inputLen} (its argument).  Salsa family ciphers
-     * are stream ciphers, and thus don't need extra output size.
-     *
-     * @param inputLen The length of input.
-     * @return {@code inputLen}.
-     */
-    @Override
-    protected final int engineGetOutputSize(final int inputLen) {
-        return inputLen;
-    }
-
-    /**
-     * Throws {@link java.security.NoSuchAlgorithmException}.  Salsa
-     * family ciphers are stream ciphers, and do not support modes.
-     *
-     * @throws java.security.NoSuchAlgorithmException Always.
-     */
-    @Override
-    protected final void engineSetMode(final String mode)
-        throws NoSuchAlgorithmException {
-        throw new NoSuchAlgorithmException("Salsa family ciphers " +
-                                           "do not support modes");
-    }
-
-    /**
-     * Throws {@link java.security.NoSuchAlgorithmException}.  Salsa
-     * family ciphers are stream ciphers, and do not support padding.
-     *
-     * @throws javax.crypto.NoSuchPaddingException Unless {@code
-     * "NoPadding"} is specified.
-     */
-    @Override
-    protected final void engineSetPadding(final String padding)
-        throws NoSuchPaddingException {
-        if (!padding.equals("NoPadding")) {
-            throw new NoSuchPaddingException("Salsa family ciphers " +
-                                             "do not support padding");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final byte[] engineUpdate(final byte[] input,
-                                        final int inputOffset,
-                                        final int inputLen) {
-        final byte[] out = new byte[inputLen];
-
-        engineUpdate(input, inputOffset, inputLen, out, 0);
-
-        return out;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final int engineUpdate(final byte[] input,
-                                     final int inputOffset,
-                                     final int inputLen,
-                                     final byte[] output,
-                                     final int outputOffset) {
-        for(int i = 0; i < inputLen;) {
-            final int inputRemaining = inputLen - i;
-            final int blockRemaining = STATE_BYTES - blockOffset;
-            final int groupLen;
-
-            if (inputRemaining < blockRemaining) {
-                groupLen = inputRemaining;
-                innerUpdate(input, inputOffset + i, groupLen,
-                            output, outputOffset + i);
-                i += groupLen;
-            } else {
-                groupLen = blockRemaining;
-                innerUpdate(input, inputOffset + i, groupLen,
-                            output, outputOffset + i);
-                i += groupLen;
-                nextBlock();
-            }
-        }
-
-        return inputLen;
-    }
-
-    /**
-     * Apply the cipher without crossing a cipher block boundary.
-     *
-     * @param input The input.
-     * @param inputOffset The offset at which input begins.
-     * @param inputLen The length of input.
-     * @param output The output array.
-     * @param outputOffset The offset at which output begins.
-     * @see #engineUpdate
-     */
-    private void innerUpdate(final byte[] input,
-                             final int inputOffset,
-                             final int inputLen,
-                             final byte[] output,
-                             final int outputOffset) {
-        for(int i = 0; i < inputLen; i++) {
-            final int shift = (blockOffset % 4) * 8;
-            final int blockWord = blockOffset / 4;
-            final byte blockByte = (byte)((block[blockWord] >> shift) & 0xff);
-            final byte out = (byte)(blockByte ^ input[inputOffset + i]);
-
-            output[outputOffset + i] = out;
-            blockOffset++;
-        }
-    }
-
-    /**
-     * Compute all cipher rounds on {@code block}.
-     */
-    protected abstract void rounds();
-
-    /**
      * Compute the current stream block.
      */
-    final void streamBlock() {
+    @Override
+    protected final void streamBlock() {
         initBlock();
         rounds();
         addBlock();
     }
 
     /**
-     * Advance to the next stream block and compute it.
+     * Compute all cipher rounds on {@code block}.
      */
-    private void nextBlock() {
-        blockIdx++;
-        blockOffset = 0;
-        streamBlock();
-    }
+    protected abstract void rounds();
 
     /**
      * Add the initial block state to the final state.

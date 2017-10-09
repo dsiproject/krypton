@@ -105,7 +105,7 @@ public class SalsaFamilyParametersSpi extends AlgorithmParametersSpi {
         if (paramSpec.equals(SalsaFamilyParameterSpec.class) ||
             paramSpec.equals(PositionParameterSpec.class) ||
             paramSpec.equals(IvParameterSpec.class)) {
-            return (T) new SalsaFamilyParameterSpec(iv, pos);
+            return paramSpec.cast(new SalsaFamilyParameterSpec(iv, pos));
         } else {
             throw new InvalidParameterSpecException();
         }

@@ -50,7 +50,8 @@ public final class ChaCha20KeyGeneratorSpi extends SalsaFamilyKeyGeneratorSpi {
      * {@inheritDoc}
      */
     @Override
-    protected final SecretKey engineGenerateKey(final byte[] data) {
-        return new ChaCha20CipherSpi.Key(data);
+    protected final ChaCha20CipherSpi.ChaCha20Key
+        engineGenerateKey(final byte[] data) {
+        return new ChaCha20CipherSpi.ChaCha20Key(data);
     }
 }
