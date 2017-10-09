@@ -32,6 +32,7 @@
 package net.metricspace.crypto.ciphers.stream.salsa;
 
 import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;

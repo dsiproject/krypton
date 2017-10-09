@@ -45,8 +45,8 @@ import org.testng.annotations.Test;
 import net.metricspace.crypto.providers.KryptonProvider;
 
 public class Salsa20CipherSpiTest {
-    private static final Salsa20CipherSpi.Key KEY =
-        new Salsa20CipherSpi.Key(new int[] {
+    private static final Salsa20CipherSpi.Salsa20Key KEY =
+        new Salsa20CipherSpi.Salsa20Key(new int[] {
                 0x04030201, 0x08070605, 0x0c0b0a09, 0x100f0e0d,
                 0x14131211, 0x18171615, 0x1c1b1a19, 0x201f1e1d,
             });
@@ -67,8 +67,8 @@ public class Salsa20CipherSpiTest {
         (byte)5, (byte)9, (byte)2, (byte)6
     };
 
-    private static final ChaCha20CipherSpi.Key FROM_BYTES =
-        new ChaCha20CipherSpi.Key(KEY_EXPECTED);
+    private static final Salsa20CipherSpi.Salsa20Key FROM_BYTES =
+        new Salsa20CipherSpi.Salsa20Key(KEY_EXPECTED);
 
     private static final int BLOCK_IDX = 7;
 
@@ -154,11 +154,13 @@ public class Salsa20CipherSpiTest {
     private static Salsa20CipherSpi makeTestInstance() {
         final Salsa20CipherSpi spi = new Salsa20CipherSpi();
 
-        spi.key = KEY;
-        spi.blockIdx = BLOCK_IDX;
+        spi.setKey(KEY);
+        spi.setBlockIdx(BLOCK_IDX);
+
+        final byte[] iv = spi.getIV();
 
         for(int i = 0; i < IV.length; i++) {
-            spi.iv[i] = IV[i];
+            iv[i] = IV[i];
         }
 
         return spi;
@@ -186,7 +188,7 @@ public class Salsa20CipherSpiTest {
                InvalidParameterSpecException {
         final Salsa20CipherSpi spi = makeTestInstance();
 
-        spi.blockOffset = BLOCK_OFFSET;
+        spi.setBlockOffset(BLOCK_OFFSET);
 
         final AlgorithmParameters params =
             spi.engineGetParameters();
@@ -197,11 +199,11 @@ public class Salsa20CipherSpiTest {
 
         final Salsa20CipherSpi newspi = new Salsa20CipherSpi();
 
-        newspi.engineInit(0, KEY, params, null);
+        newspi.testEngineInit(0, KEY, params, null);
 
-        Assert.assertEquals(newspi.iv, IV);
-        Assert.assertEquals(newspi.blockIdx, BLOCK_IDX);
-        Assert.assertEquals(newspi.blockOffset, BLOCK_OFFSET);
+        Assert.assertEquals(newspi.getIV(), IV);
+        Assert.assertEquals(newspi.getBlockIdx(), BLOCK_IDX);
+        Assert.assertEquals(newspi.getBlockOffset(), BLOCK_OFFSET);
     }
 
     @Test
@@ -214,9 +216,9 @@ public class Salsa20CipherSpiTest {
 
         spi.engineInit(0, KEY, spec, null);
 
-        Assert.assertEquals(spi.iv, IV);
-        Assert.assertEquals(spi.blockIdx, BLOCK_IDX);
-        Assert.assertEquals(spi.blockOffset, BLOCK_OFFSET);
+        Assert.assertEquals(spi.getIV(), IV);
+        Assert.assertEquals(spi.getBlockIdx(), BLOCK_IDX);
+        Assert.assertEquals(spi.getBlockOffset(), BLOCK_OFFSET);
     }
 
 
@@ -233,7 +235,7 @@ public class Salsa20CipherSpiTest {
             Arrays.copyOfRange(TEST_DATA, pos, pos + len);
 
         spi.engineInit(0, KEY, spec, null);
-        spi.engineUpdate(actual, 0, len, actual, 0);
+        spi.testEngineUpdate(actual, 0, len, actual, 0);
         Assert.assertEquals(actual, expected);
     }
 
