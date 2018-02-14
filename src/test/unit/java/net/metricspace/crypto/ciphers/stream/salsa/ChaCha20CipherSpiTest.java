@@ -44,11 +44,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import net.metricspace.crypto.ciphers.stream.KeystreamCipherTestUtils;
 import net.metricspace.crypto.providers.KryptonProvider;
 
 public class ChaCha20CipherSpiTest {
-    private static final ChaCha20CipherSpi.Key KEY =
-        new ChaCha20CipherSpi.Key(new int[] {
+    private static final ChaCha20CipherSpi.ChaCha20Key KEY =
+        new ChaCha20CipherSpi.ChaCha20Key(new int[] {
                 0x04030201, 0x08070605, 0x0c0b0a09, 0x100f0e0d,
                 0x14131211, 0x18171615, 0x1c1b1a19, 0x201f1e1d,
             });
@@ -64,8 +65,8 @@ public class ChaCha20CipherSpiTest {
         (byte)29, (byte)30, (byte)31, (byte)32
     };
 
-    private static final ChaCha20CipherSpi.Key FROM_BYTES =
-        new ChaCha20CipherSpi.Key(KEY_EXPECTED);
+    private static final ChaCha20CipherSpi.ChaCha20Key FROM_BYTES =
+        new ChaCha20CipherSpi.ChaCha20Key(KEY_EXPECTED);
 
     private static final byte[] IV = new byte[] {
         (byte)3, (byte)1, (byte)4, (byte)1,
@@ -82,11 +83,13 @@ public class ChaCha20CipherSpiTest {
     private static ChaCha20CipherSpi makeTestInstance() {
         final ChaCha20CipherSpi spi = new ChaCha20CipherSpi();
 
-        spi.key = KEY;
-        spi.blockIdx = BLOCK_IDX;
+        KeystreamCipherTestUtils.setKey(spi, KEY);
+        KeystreamCipherTestUtils.setBlockIdx(spi, BLOCK_IDX);
+
+        final byte[] iv = KeystreamCipherTestUtils.getIV(spi);
 
         for(int i = 0; i < IV.length; i++) {
-            spi.iv[i] = IV[i];
+            iv[i] = IV[i];
         }
 
         return spi;
@@ -114,7 +117,7 @@ public class ChaCha20CipherSpiTest {
                InvalidParameterSpecException {
         final ChaCha20CipherSpi spi = makeTestInstance();
 
-        spi.blockOffset = BLOCK_OFFSET;
+        KeystreamCipherTestUtils.setBlockOffset(spi, BLOCK_OFFSET);
 
         final AlgorithmParameters params =
             spi.engineGetParameters();
@@ -125,11 +128,13 @@ public class ChaCha20CipherSpiTest {
 
         final ChaCha20CipherSpi newspi = new ChaCha20CipherSpi();
 
-        newspi.engineInit(0, KEY, params, null);
+        KeystreamCipherTestUtils.engineInit(newspi, 0, KEY, params, null);
 
-        Assert.assertEquals(newspi.iv, IV);
-        Assert.assertEquals(newspi.blockIdx, BLOCK_IDX);
-        Assert.assertEquals(newspi.blockOffset, BLOCK_OFFSET);
+        Assert.assertEquals(KeystreamCipherTestUtils.getIV(newspi), IV);
+        Assert.assertEquals(KeystreamCipherTestUtils.getBlockIdx(newspi),
+                            BLOCK_IDX);
+        Assert.assertEquals(KeystreamCipherTestUtils.getBlockOffset(newspi),
+                            BLOCK_OFFSET);
     }
 
     @Test
@@ -142,19 +147,21 @@ public class ChaCha20CipherSpiTest {
 
         spi.engineInit(0, KEY, spec, null);
 
-        Assert.assertEquals(spi.iv, IV);
-        Assert.assertEquals(spi.blockIdx, BLOCK_IDX);
-        Assert.assertEquals(spi.blockOffset, BLOCK_OFFSET);
+        Assert.assertEquals(KeystreamCipherTestUtils.getIV(spi), IV);
+        Assert.assertEquals(KeystreamCipherTestUtils.getBlockIdx(spi),
+                            BLOCK_IDX);
+        Assert.assertEquals(KeystreamCipherTestUtils.getBlockOffset(spi),
+                            BLOCK_OFFSET);
     }
 
-    private static final ChaCha20CipherSpi.Key IETF_KEY0 =
-        new ChaCha20CipherSpi.Key(new int[] {
+    private static final ChaCha20CipherSpi.ChaCha20Key IETF_KEY0 =
+        new ChaCha20CipherSpi.ChaCha20Key(new int[] {
                 0x00000000, 0x00000000, 0x00000000, 0x00000000,
                 0x00000000, 0x00000000, 0x00000000, 0x00000000,
             });
 
-    private static final ChaCha20CipherSpi.Key IETF_KEY1 =
-        new ChaCha20CipherSpi.Key(new int[] {
+    private static final ChaCha20CipherSpi.ChaCha20Key IETF_KEY1 =
+        new ChaCha20CipherSpi.ChaCha20Key(new int[] {
                 0x00000000, 0x00000000, 0x00000000, 0x00000000,
                 0x00000000, 0x00000000, 0x00000000, 0x01000000,
             });
@@ -258,7 +265,7 @@ public class ChaCha20CipherSpiTest {
         final byte[] actual = new byte[len];
 
         spi.engineInit(0, IETF_KEY0, new IvParameterSpec(IETF_IV0), null);
-        spi.engineUpdate(actual, 0, len, actual, 0);
+        KeystreamCipherTestUtils.engineUpdate(spi, actual, 0, len, actual, 0);
 
         Assert.assertEquals(actual, EXPECTED_IETF_KEY0_IV0);
 
@@ -273,7 +280,7 @@ public class ChaCha20CipherSpiTest {
         final byte[] actual = new byte[len];
 
         spi.engineInit(0, IETF_KEY1, new IvParameterSpec(IETF_IV0), null);
-        spi.engineUpdate(actual, 0, len, actual, 0);
+        KeystreamCipherTestUtils.engineUpdate(spi, actual, 0, len, actual, 0);
 
         Assert.assertEquals(actual, EXPECTED_IETF_KEY1_IV0);
 
@@ -288,7 +295,7 @@ public class ChaCha20CipherSpiTest {
         final byte[] actual = new byte[len];
 
         spi.engineInit(0, IETF_KEY0, new IvParameterSpec(IETF_IV1), null);
-        spi.engineUpdate(actual, 0, len, actual, 0);
+        KeystreamCipherTestUtils.engineUpdate(spi, actual, 0, len, actual, 0);
 
         Assert.assertEquals(actual, EXPECTED_IETF_KEY0_IV1);
 
@@ -303,7 +310,7 @@ public class ChaCha20CipherSpiTest {
         final byte[] actual = new byte[len];
 
         spi.engineInit(0, IETF_KEY0, new IvParameterSpec(IETF_IVHI), null);
-        spi.engineUpdate(actual, 0, len, actual, 0);
+        KeystreamCipherTestUtils.engineUpdate(spi, actual, 0, len, actual, 0);
 
         Assert.assertEquals(actual, EXPECTED_IETF_KEY0_IVHI);
 
