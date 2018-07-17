@@ -15,7 +15,6 @@
     <jcov.coverage.dir>${jcov.dir}/coverage</jcov.coverage.dir>
     <jcov.reports.dir>${jcov.dir}/reports</jcov.reports.dir>
     <jcov_file_saver.jar>${jcov.dir}/jcov_file_saver.jar</jcov_file_saver.jar>
-    <slf4j.version>1.7.21</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <test.unit.srcs>${project.basedir}/src/test/unit/java</test.unit.srcs>
@@ -32,11 +31,6 @@
       <artifactId>testng</artifactId>
       <version>6.1.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 

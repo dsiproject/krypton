@@ -32,6 +32,7 @@
 package net.metricspace.crypto.ciphers.stream.salsa;
 
 import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -142,7 +143,7 @@ public final class Salsa20CipherSpi
                                     final Key key,
                                     final AlgorithmParameterSpec spec,
                                     final SecureRandom random)
-        throws InvalidKeyException {
+        throws InvalidKeyException, InvalidAlgorithmParameterException {
         try {
             engineInit(opmode, (Salsa20Key)key, spec, random);
         } catch(final ClassCastException e) {

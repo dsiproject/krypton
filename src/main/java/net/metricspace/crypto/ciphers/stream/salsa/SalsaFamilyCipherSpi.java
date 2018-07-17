@@ -204,6 +204,11 @@ abstract class
               new int[STATE_WORDS], new byte[IV_LEN]);
     }
 
+    protected final void engineInit(final K key,
+                                    final SalsaFamilyParameterSpec spec) {
+        engineInit(key, spec.getPosition(), spec);
+    }
+
     /**
      * Initialize from a well-typed key and a generally-typed spec.
      * If {@code spec} is a {@link SalsaFamilyParameterSpec}, both the
@@ -224,7 +229,6 @@ abstract class
                                     final AlgorithmParameterSpec spec,
                                     final SecureRandom random)
         throws InvalidAlgorithmParameterException {
-
         final long pos;
         final byte[] iv;
 
@@ -240,6 +244,23 @@ abstract class
         } else {
             throw new InvalidAlgorithmParameterException();
         }
+    }
+
+    protected final void engineInit(final int opmode,
+                                    final K key,
+                                    final AlgorithmParameterSpec spec,
+                                    final SecureRandom random)
+        throws InvalidAlgorithmParameterException {
+        engineInit(key, spec, random);
+    }
+
+    protected final void engineInit(final int opmode,
+                                    final K key,
+                                    final SecureRandom random) {
+        final byte[] iv = new byte[IV_LEN];
+        random.nextBytes(iv);
+
+        engineInit(key, iv);
     }
 
 

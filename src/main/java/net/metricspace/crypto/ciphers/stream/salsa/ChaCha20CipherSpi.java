@@ -143,7 +143,7 @@ public final class ChaCha20CipherSpi
                                     final Key key,
                                     final AlgorithmParameterSpec spec,
                                     final SecureRandom random)
-        throws InvalidKeyException {
+        throws InvalidKeyException, InvalidAlgorithmParameterException {
         try {
             engineInit(opmode, (ChaCha20Key)key, spec, random);
         } catch(final ClassCastException e) {
