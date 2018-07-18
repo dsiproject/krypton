@@ -32,9 +32,15 @@
 package net.metricspace.crypto.ciphers.stream.salsa;
 
 import java.security.AlgorithmParameters;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import net.metricspace.crypto.ciphers.stream.KeystreamCipherTestUtils;
 
 public class SalsaCipherSpiTest {
     private static final TestKey KEY =
@@ -82,23 +88,63 @@ public class SalsaCipherSpiTest {
 
     private static SalsaCipherSpi<TestKey> cipherInstance() {
         return new SalsaCipherSpi<TestKey>() {
-                @Override
-                protected void rounds() {}
+            @Override
+            protected void rounds() {}
 
-                @Override
-                protected AlgorithmParameters engineGetParameters() {
-                    return null;
+            @Override
+            protected AlgorithmParameters engineGetParameters() {
+                return null;
+            }
+
+            @Override
+            protected final void engineInit(final Key key,
+                                            final SalsaFamilyParameterSpec spec)
+                throws InvalidKeyException {
+                try {
+                    engineInit((SalsaFamilyKey)key, spec);
+                } catch(final ClassCastException e) {
+                    throw new InvalidKeyException("Cannot accept key for " +
+                                                  key.getAlgorithm());
                 }
+            }
 
-                {
-                    key = KEY;
-                    blockIdx = BLOCK_IDX;
-
-                    for(int i = 0; i < IV.length; i++) {
-                        iv[i] = IV[i];
-                    }
+            @Override
+            protected final void engineInit(final int opmode,
+                                            final Key key,
+                                            final AlgorithmParameterSpec spec,
+                                            final SecureRandom random)
+                throws InvalidKeyException {
+                try {
+                    engineInit(opmode, (SalsaFamilyKey)key, spec, random);
+                } catch(final ClassCastException e) {
+                    throw new InvalidKeyException("Cannot accept key for " +
+                                                  key.getAlgorithm());
                 }
-            };
+            }
+
+            @Override
+            protected final void engineInit(final int opmode,
+                                            final Key key,
+                                            final SecureRandom random)
+                throws InvalidKeyException {
+                try {
+                    engineInit(opmode, (SalsaFamilyKey)key, random);
+                } catch(final ClassCastException e) {
+                    throw new InvalidKeyException("Cannot accept key for " +
+                                                  key.getAlgorithm());
+                }
+            }
+
+
+            {
+                key = KEY;
+                blockIdx = BLOCK_IDX;
+
+                for(int i = 0; i < IV.length; i++) {
+                    iv[i] = IV[i];
+                }
+            }
+        };
     }
 
     @Test
@@ -108,8 +154,10 @@ public class SalsaCipherSpiTest {
         spi.initBlock();
         spi.doubleRound();
 
+        final int[] block = KeystreamCipherTestUtils.getBlock(spi);
+
         for(int i = 0; i < EXPECTED.length; i++) {
-            Assert.assertEquals(spi.block[i], EXPECTED[i]);
+            Assert.assertEquals(block[i], EXPECTED[i]);
         }
     }
 
@@ -126,8 +174,10 @@ public class SalsaCipherSpiTest {
 
         spi.initBlock();
 
+        final int[] block = KeystreamCipherTestUtils.getBlock(spi);
+
         for(int i = 0; i < INIT_EXPECTED.length; i++) {
-            Assert.assertEquals(spi.block[i], INIT_EXPECTED[i]);
+            Assert.assertEquals(block[i], INIT_EXPECTED[i]);
         }
     }
 }
