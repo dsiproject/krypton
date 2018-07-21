@@ -53,11 +53,11 @@ import org.testng.annotations.Test;
 import net.metricspace.crypto.ciphers.JCACipherTest;
 import net.metricspace.crypto.providers.KryptonProvider;
 
-public abstract class StreamCipherJCACipherTest extends JCACipherTest {
-    protected StreamCipherJCACipherTest(final String providername,
-                                        final String ciphername,
-                                        final int keysize,
-                                        final int ivsize) {
+public abstract class SeekableStreamCipherJCACipherTest extends JCACipherTest {
+    protected SeekableStreamCipherJCACipherTest(final String providername,
+                                                final String ciphername,
+                                                final int keysize,
+                                                final int ivsize) {
         super(providername, ciphername, keysize, ivsize);
     }
 
@@ -72,19 +72,31 @@ public abstract class StreamCipherJCACipherTest extends JCACipherTest {
                 final byte[] msg1 = Arrays.copyOfRange(MSG_DATA, i, i + j);
 
                 for(int k = 1; k < j - 2; k++) {
-                    doJCACipherSmokeTest(msg1, k);
+                    for(int l = 1; l < MSG_DATA.length; l++) {
+                        for(int o = 2; o < MSG_DATA.length - l; o++) {
+                            for(int p = 1; p < o - 2; p++) {
+                                final byte[] msg2 =
+                                    Arrays.copyOfRange(MSG_DATA, l, l + o);
+
+                                doJCACipherSmokeTest(msg1, k, msg2, p);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    protected void doJCACipherSmokeTest(final byte[] expected1,
-                                        final int break1)
+    private void doJCACipherSmokeTest(final byte[] expected1,
+                                      final int break1,
+                                      final byte[] expected2,
+                                      final int break2)
         throws ShortBufferException, InvalidKeyException,
                NoSuchAlgorithmException, NoSuchProviderException,
                InvalidAlgorithmParameterException, IllegalBlockSizeException,
                NoSuchPaddingException, BadPaddingException {
         final int length1 = expected1.length;
+        final int length2 = expected2.length;
         final Cipher cipher =
             Cipher.getInstance(ciphername, providername);
         final KeyGenerator keygen =
@@ -108,7 +120,23 @@ public abstract class StreamCipherJCACipherTest extends JCACipherTest {
         final byte[] ctext2 = new byte[ctextlen2];
 
         cipher.doFinal(expected1, break1, length1 - break1, ctext2, 0);
+
+        final AlgorithmParameters params2 = cipher.getParameters();
+        final int ctextlen3 = cipher.getOutputSize(break2);
+        final byte[] ctext3 = new byte[ctextlen3];
+
+        cipher.update(expected2, 0, break2, ctext3, 0);
+
+        final int ctextlen4 = cipher.getOutputSize(length2 - break2);
+        final byte[] ctext4 = new byte[ctextlen4];
+
+        cipher.doFinal(expected2, break2, length2 - break2, ctext4, 0);
+
         cipher.init(Cipher.DECRYPT_MODE, key, params1);
         testMessageDecrypt(cipher, ctext1, ctext2, expected1);
+        testMessageDecrypt(cipher, ctext3, ctext4, expected2);
+
+        cipher.init(Cipher.DECRYPT_MODE, key, params2);
+        testMessageDecrypt(cipher, ctext3, ctext4, expected2);
     }
 }

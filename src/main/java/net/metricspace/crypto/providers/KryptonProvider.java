@@ -34,6 +34,10 @@ package net.metricspace.crypto.providers;
 import java.security.Security;
 import java.security.Provider;
 
+import net.metricspace.crypto.ciphers.stream.hc.HC256CipherSpi;
+import net.metricspace.crypto.ciphers.stream.hc.HC256KeyGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.hc.HC256ParameterGeneratorSpi;
+import net.metricspace.crypto.ciphers.stream.hc.HC256ParametersSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20KeyGeneratorSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.ChaCha20ParameterGeneratorSpi;
@@ -60,6 +64,8 @@ import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
  *      ({@link net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi})
  * <li> ChaCha20
  *      ({@link net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi})
+ * <li> HC-256
+ *      ({@link net.metricspace.crypto.ciphers.stream.hc.HC256CipherSpi})
  * </ul>
  * <p>
  * See the corresponding Spi class documentation for each cipher for
@@ -97,19 +103,25 @@ public final class KryptonProvider extends Provider {
 
         put("KeyGenerator.ChaCha20", ChaCha20KeyGeneratorSpi.class.getName());
         put("KeyGenerator.Salsa20", Salsa20KeyGeneratorSpi.class.getName());
+        put("KeyGenerator.HC-256", HC256KeyGeneratorSpi.class.getName());
 
         put("AlgorithmParameters.ChaCha20",
             SalsaFamilyParametersSpi.class.getName());
         put("AlgorithmParameters.Salsa20",
             SalsaFamilyParametersSpi.class.getName());
+        put("AlgorithmParameters.HC-256",
+            HC256ParametersSpi.class.getName());
 
         put("AlgorithmParameterGenerator.ChaCha20",
             ChaCha20ParameterGeneratorSpi.class.getName());
         put("AlgorithmParameterGenerator.Salsa20",
             Salsa20ParameterGeneratorSpi.class.getName());
+        put("AlgorithmParameterGenerator.HC-256",
+            HC256ParameterGeneratorSpi.class.getName());
 
         put("Cipher.ChaCha20", ChaCha20CipherSpi.class.getName());
         put("Cipher.Salsa20", Salsa20CipherSpi.class.getName());
+        put("Cipher.HC-256", HC256CipherSpi.class.getName());
     }
 
     /**

@@ -46,6 +46,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import net.metricspace.crypto.common.Common256BitKey;
 import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
 import net.metricspace.crypto.ciphers.stream.SeekableKeystreamCipherSpi;
 
@@ -64,29 +65,9 @@ abstract class
     public static final int IV_LEN = 8;
 
     /**
-     * Length of the key in bits.
-     */
-    public static final int KEY_BITS = 256;
-
-    /**
-     * Length of the key in bytes.
-     */
-    public static final int KEY_LEN = KEY_BITS / 8;
-
-    /**
-     * Length of the key in 4-byte words.
-     */
-    public static final int KEY_WORDS = KEY_BITS / 32;
-
-    /**
      * Keys for the Salsa cipher family.
      */
-    static abstract class SalsaFamilyKey implements SecretKey, Key {
-        /**
-         * The key data.
-         */
-        final int[] data;
-
+    static abstract class SalsaFamilyKey extends Common256BitKey {
         /**
          * Initialize this key with the given array.  The key takes
          * possession of the {@code data} array.
@@ -94,7 +75,7 @@ abstract class
          * @param data The key material.
          */
         SalsaFamilyKey(final int[] data) {
-            this.data = data;
+            super(data);
         }
 
         /**
@@ -104,85 +85,7 @@ abstract class
          * @param data The key material.
          */
         SalsaFamilyKey(final byte[] data) {
-            this.data = new int[KEY_WORDS];
-            this.data[0] =
-                data[0] | data[1] << 8 |
-                data[2] << 16 | data[3] << 24;
-            this.data[1] =
-                data[4] | data[5] << 8 |
-                data[6] << 16 | data[7] << 24;
-            this.data[2] =
-                data[8] | data[9] << 8 |
-                data[10] << 16 | data[11] << 24;
-            this.data[3] =
-                data[12] | data[13] << 8 |
-                data[14] << 16 | data[15] << 24;
-            this.data[4] =
-                data[16] | data[17] << 8 |
-                data[18] << 16 | data[19] << 24;
-            this.data[5] =
-                data[20] | data[21] << 8 |
-                data[22] << 16 | data[23] << 24;
-            this.data[6] =
-                data[24] | data[25] << 8 |
-                data[26] << 16 | data[27] << 24;
-            this.data[7] =
-                data[28] | data[29] << 8 |
-                data[30] << 16 | data[31] << 24;
-        }
-
-        /**
-         * Returns the name of the primary encoding format, which is
-         * {@code "RAW"}.
-         *
-         * @return The string {@code "RAW"}
-         */
-        @Override
-        public final String getFormat() {
-            return "RAW";
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public final byte[] getEncoded() {
-            final byte[] out = new byte[KEY_LEN];
-
-            out[0] = (byte)(data[0] & 0xff);
-            out[1] = (byte)((data[0] >>> 8) & 0xff);
-            out[2] = (byte)((data[0] >>> 16) & 0xff);
-            out[3] = (byte)((data[0] >>> 24) & 0xff);
-            out[4] = (byte)(data[1] & 0xff);
-            out[5] = (byte)((data[1] >>> 8) & 0xff);
-            out[6] = (byte)((data[1] >>> 16) & 0xff);
-            out[7] = (byte)((data[1] >>> 24) & 0xff);
-            out[8] = (byte)(data[2] & 0xff);
-            out[9] = (byte)((data[2] >>> 8) & 0xff);
-            out[10] = (byte)((data[2] >>> 16) & 0xff);
-            out[11] = (byte)((data[2] >>> 24) & 0xff);
-            out[12] = (byte)(data[3] & 0xff);
-            out[13] = (byte)((data[3] >>> 8) & 0xff);
-            out[14] = (byte)((data[3] >>> 16) & 0xff);
-            out[15] = (byte)((data[3] >>> 24) & 0xff);
-            out[16] = (byte)(data[4] & 0xff);
-            out[17] = (byte)((data[4] >>> 8) & 0xff);
-            out[18] = (byte)((data[4] >>> 16) & 0xff);
-            out[19] = (byte)((data[4] >>> 24) & 0xff);
-            out[20] = (byte)(data[5] & 0xff);
-            out[21] = (byte)((data[5] >>> 8) & 0xff);
-            out[22] = (byte)((data[5] >>> 16) & 0xff);
-            out[23] = (byte)((data[5] >>> 24) & 0xff);
-            out[24] = (byte)(data[6] & 0xff);
-            out[25] = (byte)((data[6] >>> 8) & 0xff);
-            out[26] = (byte)((data[6] >>> 16) & 0xff);
-            out[27] = (byte)((data[6] >>> 24) & 0xff);
-            out[28] = (byte)(data[7] & 0xff);
-            out[29] = (byte)((data[7] >>> 8) & 0xff);
-            out[30] = (byte)((data[7] >>> 16) & 0xff);
-            out[31] = (byte)((data[7] >>> 24) & 0xff);
-
-            return out;
+            super(data);
         }
     }
 
@@ -229,9 +132,6 @@ abstract class
                                     final AlgorithmParameterSpec spec,
                                     final SecureRandom random)
         throws InvalidAlgorithmParameterException {
-        final long pos;
-        final byte[] iv;
-
         if (spec instanceof SalsaFamilyParameterSpec) {
             engineInit(key, (SalsaFamilyParameterSpec)spec);
         } else if (spec instanceof IvParameterSpec) {
@@ -263,7 +163,6 @@ abstract class
         engineInit(key, iv);
     }
 
-
     /**
      * Get the {@link java.security.spec.AlgorithmParameterSpec} to
      * initialize {@link java.security.AlgorithmParameters} from the
@@ -277,6 +176,9 @@ abstract class
 
         return new SalsaFamilyParameterSpec(iv, pos);
     }
+
+    @Override
+    protected final void initState() {}
 
     /**
      * Compute the current stream block.

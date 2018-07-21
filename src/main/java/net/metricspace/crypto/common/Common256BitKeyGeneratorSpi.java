@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.ciphers.stream.salsa;
+package net.metricspace.crypto.common;
 
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
@@ -38,9 +38,71 @@ import java.util.Arrays;
 import javax.crypto.KeyGeneratorSpi;
 import javax.crypto.SecretKey;
 
-import net.metricspace.crypto.common.Common256BitKeyGeneratorSpi;
-
 /**
  * A common superclass for key generators for Salsa family ciphers.
  */
-abstract class SalsaFamilyKeyGeneratorSpi extends Common256BitKeyGeneratorSpi {}
+public abstract class Common256BitKeyGeneratorSpi extends KeyGeneratorSpi {
+    /**
+     * The random source.
+     */
+    private SecureRandom random;
+
+    /**
+     * Generate a key from the concrete key material provided.  It is
+     * safe to take possession of the array passed in.
+     *
+     * @param data The concrete key material.
+     * @return The generated key.
+     */
+    protected abstract SecretKey engineGenerateKey(final byte[] data);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final SecretKey engineGenerateKey() {
+        final byte[] bytes = new byte[Common256BitKey.KEY_LEN];
+
+        try {
+            random.nextBytes(bytes);
+
+            return engineGenerateKey(bytes);
+        } finally {
+            Arrays.fill(bytes, (byte)0);
+        }
+    }
+
+    /**
+     * Initializes the key generator with the given random source.
+     * The {@link AlgorithmParameterSpec} is not used.
+     *
+     * @param spec Ignored.
+     * @param random The random source.
+     */
+    @Override
+    protected final void engineInit(final AlgorithmParameterSpec spec,
+                                    final SecureRandom random) {
+        engineInit(random);
+    }
+
+    /**
+     * Initializes the key generator with the given random source.
+     * The key size parameter is ignored.
+     *
+     * @param keysize Ignored.
+     * @param random The random source.
+     */
+    @Override
+    protected final void engineInit(final int keysize,
+                                    final SecureRandom random) {
+        engineInit(random);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void engineInit(final SecureRandom random) {
+        this.random = random;
+    }
+}

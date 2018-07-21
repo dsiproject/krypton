@@ -152,21 +152,23 @@ abstract class SalsaCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
      */
     @Override
     protected final void addBlock() {
+        final int[] data = key.getData();
+
         block[0] += 0x61707865;
-        block[1] += key.data[0];
-        block[2] += key.data[1];
-        block[3] += key.data[2];
-        block[4] += key.data[3];
+        block[1] += data[0];
+        block[2] += data[1];
+        block[3] += data[2];
+        block[4] += data[3];
         block[5] += 0x3320646e;
         block[6] += iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
         block[7] += iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
         block[8] += (int)(blockIdx & 0xffffffffL);
         block[9] += (int)((blockIdx >> 32) & 0xffffffffL);
         block[10] += 0x79622d32;
-        block[11] += key.data[4];
-        block[12] += key.data[5];
-        block[13] += key.data[6];
-        block[14] += key.data[7];
+        block[11] += data[4];
+        block[12] += data[5];
+        block[13] += data[6];
+        block[14] += data[7];
         block[15] += 0x6b206574;
     }
 
@@ -175,21 +177,23 @@ abstract class SalsaCipherSpi<K extends SalsaFamilyCipherSpi.SalsaFamilyKey>
      */
     @Override
     protected final void initBlock() {
+        final int[] data = key.getData();
+
         block[0] = 0x61707865;
-        block[1] = key.data[0];
-        block[2] = key.data[1];
-        block[3] = key.data[2];
-        block[4] = key.data[3];
+        block[1] = data[0];
+        block[2] = data[1];
+        block[3] = data[2];
+        block[4] = data[3];
         block[5] = 0x3320646e;
         block[6] = iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
         block[7] = iv[4] | iv[5] << 8 | iv[6] << 16 | iv[7] << 24;
         block[8] = (int)(blockIdx & 0xffffffffL);
         block[9] = (int)((blockIdx >> 32) & 0xffffffffL);
         block[10] = 0x79622d32;
-        block[11] = key.data[4];
-        block[12] = key.data[5];
-        block[13] = key.data[6];
-        block[14] = key.data[7];
+        block[11] = data[4];
+        block[12] = data[5];
+        block[13] = data[6];
+        block[14] = data[7];
         block[15] = 0x6b206574;
     }
 }

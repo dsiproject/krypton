@@ -126,7 +126,6 @@ public class ChaCha20CipherSpiTest {
 
         Assert.assertEquals(spec.getPosition(), POS);
 
-        System.err.println("Running test in question");
         final ChaCha20CipherSpi newspi = new ChaCha20CipherSpi();
 
         KeystreamCipherTestUtils.engineInit(newspi, 0, KEY, params, null);

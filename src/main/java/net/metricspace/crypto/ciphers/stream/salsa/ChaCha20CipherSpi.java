@@ -181,7 +181,7 @@ public final class ChaCha20CipherSpi
         final AlgorithmParameters out;
 
         try {
-            out = AlgorithmParameters.getInstance(Salsa20CipherSpi.NAME,
+            out = AlgorithmParameters.getInstance(ChaCha20CipherSpi.NAME,
                                                   KryptonProvider.NAME);
             out.init(parameterSpec());
         } catch(final NoSuchAlgorithmException e) {

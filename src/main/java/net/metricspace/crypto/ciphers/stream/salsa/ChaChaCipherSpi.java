@@ -113,18 +113,20 @@ public abstract class
      */
     @Override
     protected final void addBlock() {
+        final int[] data = key.getData();
+
         block[0] += 0x61707865;
         block[1] += 0x3320646e;
         block[2] += 0x79622d32;
         block[3] += 0x6b206574;
-        block[4] += key.data[0];
-        block[5] += key.data[1];
-        block[6] += key.data[2];
-        block[7] += key.data[3];
-        block[8] += key.data[4];
-        block[9] += key.data[5];
-        block[10] += key.data[6];
-        block[11] += key.data[7];
+        block[4] += data[0];
+        block[5] += data[1];
+        block[6] += data[2];
+        block[7] += data[3];
+        block[8] += data[4];
+        block[9] += data[5];
+        block[10] += data[6];
+        block[11] += data[7];
         block[12] += (int)(blockIdx & 0xffffffffL);
         block[13] += (int)((blockIdx >> 32) & 0xffffffffL);
         block[14] += iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
@@ -136,18 +138,20 @@ public abstract class
      */
     @Override
     protected final void initBlock() {
+        final int[] data = key.getData();
+
         block[0] = 0x61707865;
         block[1] = 0x3320646e;
         block[2] = 0x79622d32;
         block[3] = 0x6b206574;
-        block[4] = key.data[0];
-        block[5] = key.data[1];
-        block[6] = key.data[2];
-        block[7] = key.data[3];
-        block[8] = key.data[4];
-        block[9] = key.data[5];
-        block[10] = key.data[6];
-        block[11] = key.data[7];
+        block[4] = data[0];
+        block[5] = data[1];
+        block[6] = data[2];
+        block[7] = data[3];
+        block[8] = data[4];
+        block[9] = data[5];
+        block[10] = data[6];
+        block[11] = data[7];
         block[12] = (int)(blockIdx & 0xffffffffL);
         block[13] = (int)((blockIdx >> 32) & 0xffffffffL);
         block[14] = iv[0] | iv[1] << 8 | iv[2] << 16 | iv[3] << 24;
