@@ -48,9 +48,9 @@ import net.metricspace.crypto.providers.KryptonProvider;
 
 /**
  * A base class for {@link
- * java.security.AlgorithmParameterGeneratorSpi} instances for
- * Salsa-family ciphers.  This provides basic functionality, leaving
- * only the creation of parameter objects to subclasses.
+ * java.security.AlgorithmParameterGeneratorSpi} instances for the
+ * HC-256 cipher.  This provides basic functionality, leaving only the
+ * creation of parameter objects to subclasses.
  */
 public final class HC256ParameterGeneratorSpi
     extends AlgorithmParameterGeneratorSpi {

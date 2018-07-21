@@ -47,7 +47,8 @@ import net.metricspace.crypto.providers.KryptonProvider;
  * A {@link javax.crypto.CipherSpi} implementation for the ChaCha20
  * cipher. ChaCha20 is the 20-round version of the ChaCha family
  * introduced by Daniel J. Bernstein in 2008.  ChaCha20 is used
- * frequently in the modern open-source community.
+ * frequently in the modern open-source community, and is a finalist
+ * in the eSTREAM competition.
  * <h2>Usage</h2>
  *
  * This class should not be used directly.  It provides the underlying
@@ -65,7 +66,7 @@ import net.metricspace.crypto.providers.KryptonProvider;
  * Thus, if multiple plaintexts are encrypted with the same cipher
  * stream, attackers can recover information about the plaintexts as
  * well as the cipher stream.
- * <li> <b>Re-using initialization vecctors</b>: Reuse of
+ * <li> <b>Re-using initialization vectors</b>: Reuse of
  * initialization vectors leads to encryption of multiple plaintexts
  * with the same IV.
  * <li> <b>Ciphertext Manipulation</b>: Since encryption/decryption

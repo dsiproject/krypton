@@ -41,8 +41,8 @@ import javax.crypto.spec.IvParameterSpec;
 import net.metricspace.crypto.ciphers.stream.PositionParameterSpec;
 
 /**
- * The {@link java.security.AlgorithmParametersSpi} implementation for
- * Salsa family ciphers.
+ * The {@link java.security.AlgorithmParametersSpi} implementation for the
+ * HC-256 cipher.
  */
 public final class HC256ParametersSpi extends AlgorithmParametersSpi {
     /**

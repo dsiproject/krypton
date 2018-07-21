@@ -53,10 +53,38 @@ import net.metricspace.crypto.ciphers.stream.KeystreamCipherSpi;
 import net.metricspace.crypto.providers.KryptonProvider;
 
 /**
- * A {@link javax.crypto.CipherSpi} base class for Salsa family
- * ciphers.  This includes Salsa{@code N} as well as ChaCha{@code N}
- * variants.  This provides most of the underlying implementation,
- * leaving only the round functions up to the variants.
+ * A {@link javax.crypto.CipherSpi} implementation for the HC-256
+ * cipher. HC-256 was introduced in 2004 by Hongjun Wu, and is one of
+ * the finalists in the eSTREAM cipher competition.
+ * <h2>Usage</h2>
+ *
+ * This class should not be used directly.  It provides the underlying
+ * implementation for the Java Cryptography Architecture (JCA).  See
+ * the {@link javax.crypto.Cipher} class documentation for information
+ * on how to use this cipher.
+ * <h2>Misuses</h2>
+ *
+ * The following are possible misuses of the HC-256 cipher.
+ * <ul>
+ * <li> <b>Encrypting multiple plaintexts with the same cipher
+ * stream</b>: As with other stream ciphers, the HC-256 cipher stream
+ * is generated solely from the key and IV, and is XORed with the
+ * plaintext to produce the cipher stream.  Thus, if multiple
+ * plaintexts are encrypted with the same cipher stream, attackers can
+ * recover information about the plaintexts as well as the cipher
+ * stream.
+ * <li> <b>Re-using initialization vectors</b>: Reuse of
+ * initialization vectors leads to encryption of multiple plaintexts
+ * with the same IV.
+ * <li> <b>Ciphertext Manipulation</b>: Since encryption/decryption
+ * consists of XORing the plaintext/ciphertext by the cipher stream,
+ * an attacker can flip bits in the plaintext by flipping them in the
+ * ciphertext, unless the message is also protected by a message
+ * authentication code (MAC).
+ * </ul>
+ *
+ * @see net.metricspace.crypto.providers.KryptonProvider
+ * @see javax.crypto.Cipher
  */
 public final class HC256CipherSpi
     extends KeystreamCipherSpi<HC256CipherSpi.HC256Key, IvParameterSpec> {
