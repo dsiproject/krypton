@@ -44,10 +44,10 @@ import javax.crypto.ShortBufferException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
-import net.metricspace.crypto.ciphers.stream.StreamCipherJCACipherTest;
+import net.metricspace.crypto.ciphers.stream.SeekableStreamCipherJCACipherTest;
 import net.metricspace.crypto.providers.KryptonProvider;
 
-public class ChaCha20JCACipherTest extends StreamCipherJCACipherTest {
+public class ChaCha20JCACipherTest extends SeekableStreamCipherJCACipherTest {
     @BeforeClass
     public static void init() {
         KryptonProvider.register();

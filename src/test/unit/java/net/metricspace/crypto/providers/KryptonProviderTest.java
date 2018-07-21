@@ -79,6 +79,17 @@ public class KryptonProviderTest {
     }
 
     @Test
+    public static void testHC256KeyGenerator()
+        throws NoSuchAlgorithmException, NoSuchProviderException,
+               NoSuchPaddingException {
+        final KeyGenerator g = KeyGenerator.getInstance("HC-256", "Krypton");
+
+        Assert.assertNotEquals(g, null);
+        Assert.assertEquals(g.getProvider().getName(), "Krypton");
+        Assert.assertEquals(g.getAlgorithm(), "HC-256");
+    }
+
+    @Test
     public static void testChaCha20Parameters()
         throws NoSuchAlgorithmException, NoSuchProviderException,
                NoSuchPaddingException {
@@ -100,6 +111,18 @@ public class KryptonProviderTest {
         Assert.assertNotEquals(g, null);
         Assert.assertEquals(g.getProvider().getName(), "Krypton");
         Assert.assertEquals(g.getAlgorithm(), "Salsa20");
+    }
+
+    @Test
+    public static void testHC256Parameters()
+        throws NoSuchAlgorithmException, NoSuchProviderException,
+               NoSuchPaddingException {
+        final AlgorithmParameters g =
+            AlgorithmParameters.getInstance("HC-256", "Krypton");
+
+        Assert.assertNotEquals(g, null);
+        Assert.assertEquals(g.getProvider().getName(), "Krypton");
+        Assert.assertEquals(g.getAlgorithm(), "HC-256");
     }
 
     @Test
@@ -127,6 +150,18 @@ public class KryptonProviderTest {
     }
 
     @Test
+    public static void testHC256ParameterGenerator()
+        throws NoSuchAlgorithmException, NoSuchProviderException,
+               NoSuchPaddingException {
+        final AlgorithmParameterGenerator g =
+            AlgorithmParameterGenerator.getInstance("HC-256", "Krypton");
+
+        Assert.assertNotEquals(g, null);
+        Assert.assertEquals(g.getProvider().getName(), "Krypton");
+        Assert.assertEquals(g.getAlgorithm(), "HC-256");
+    }
+
+    @Test
     public static void testChaCha20Cipher()
         throws NoSuchAlgorithmException, NoSuchProviderException,
                NoSuchPaddingException {
@@ -148,4 +183,14 @@ public class KryptonProviderTest {
         Assert.assertEquals(c.getAlgorithm(), "Salsa20");
     }
 
+    @Test
+    public static void testHC256Cipher()
+        throws NoSuchAlgorithmException, NoSuchProviderException,
+               NoSuchPaddingException {
+        final Cipher c = Cipher.getInstance("HC-256", "Krypton");
+
+        Assert.assertNotEquals(c, null);
+        Assert.assertEquals(c.getProvider().getName(), "Krypton");
+        Assert.assertEquals(c.getAlgorithm(), "HC-256");
+    }
 }

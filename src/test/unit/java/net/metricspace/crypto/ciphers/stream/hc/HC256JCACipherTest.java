@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.ciphers.stream.salsa;
+package net.metricspace.crypto.ciphers.stream.hc;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -44,10 +44,10 @@ import javax.crypto.ShortBufferException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
-import net.metricspace.crypto.ciphers.stream.SeekableStreamCipherJCACipherTest;
+import net.metricspace.crypto.ciphers.stream.StreamCipherJCACipherTest;
 import net.metricspace.crypto.providers.KryptonProvider;
 
-public class Salsa20JCACipherTest extends SeekableStreamCipherJCACipherTest {
+public class HC256JCACipherTest extends StreamCipherJCACipherTest {
     @BeforeClass
     public static void init() {
         KryptonProvider.register();
@@ -58,8 +58,8 @@ public class Salsa20JCACipherTest extends SeekableStreamCipherJCACipherTest {
         KryptonProvider.unregister();
     }
 
-    public Salsa20JCACipherTest() {
-        super(KryptonProvider.NAME, Salsa20CipherSpi.NAME, 256, 64);
+    public HC256JCACipherTest() {
+        super(KryptonProvider.NAME, HC256CipherSpi.NAME, 256, 256);
     }
 
     @Override

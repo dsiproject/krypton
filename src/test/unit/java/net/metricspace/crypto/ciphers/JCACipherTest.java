@@ -68,46 +68,16 @@ public abstract class JCACipherTest {
         this.ivsize = ivsize;
     }
 
-    private static final byte[] MSG_DATA;
+    protected static final byte[] MSG_DATA  = new byte[16];
 
     static {
-        MSG_DATA = new byte[16];
-
         for(int i = 0; i < MSG_DATA.length; i++) {
             MSG_DATA[i] = (byte)i;
         }
     };
 
     @Test
-    protected void jcaCipherSmokeTest()
-        throws ShortBufferException, InvalidKeyException,
-               NoSuchAlgorithmException, NoSuchProviderException,
-               InvalidAlgorithmParameterException, IllegalBlockSizeException,
-               NoSuchPaddingException, BadPaddingException {
-        for(int i = 1; i < MSG_DATA.length; i++) {
-            for(int j = 2; j < MSG_DATA.length - i; j++) {
-                final byte[] msg1 = Arrays.copyOfRange(MSG_DATA, i, i + j);
-
-                for(int k = 1; k < j - 2; k++) {
-                    for(int l = 1; l < MSG_DATA.length; l++) {
-                        for(int o = 2; o < MSG_DATA.length - l; o++) {
-                            for(int p = 1; p < o - 2; p++) {
-                                final byte[] msg2 =
-                                    Arrays.copyOfRange(MSG_DATA, l, l + o);
-
-                                doJCACipherSmokeTest(msg1, k, msg2, p);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected abstract void doJCACipherSmokeTest(final byte[] expected1,
-                                                 final int break1,
-                                                 final byte[] expected2,
-                                                 final int break2)
+    protected abstract void jcaCipherSmokeTest()
         throws ShortBufferException, InvalidKeyException,
                NoSuchAlgorithmException, NoSuchProviderException,
                InvalidAlgorithmParameterException, IllegalBlockSizeException,

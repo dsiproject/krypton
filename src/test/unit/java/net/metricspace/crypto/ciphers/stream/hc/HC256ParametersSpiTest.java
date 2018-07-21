@@ -29,45 +29,54 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.ciphers.stream.salsa;
+package net.metricspace.crypto.ciphers.stream.hc;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.spec.InvalidParameterSpecException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import net.metricspace.crypto.ciphers.stream.SeekableStreamCipherJCACipherTest;
-import net.metricspace.crypto.providers.KryptonProvider;
+public class HC256ParametersSpiTest {
+    private static final byte[] IV = new byte[] {
+        (byte)16, (byte)11, (byte)25, (byte)7,
+        (byte)4, (byte)22, (byte)1, (byte)15,
+        (byte)27, (byte)32, (byte)19, (byte)20,
+        (byte)10, (byte)5, (byte)26, (byte)8,
+        (byte)21, (byte)9, (byte)23, (byte)31,
+        (byte)2, (byte)17, (byte)30, (byte)14,
+        (byte)18, (byte)24, (byte)12, (byte)28,
+        (byte)6, (byte)13, (byte)29, (byte)3
+    };
 
-public class Salsa20JCACipherTest extends SeekableStreamCipherJCACipherTest {
-    @BeforeClass
-    public static void init() {
-        KryptonProvider.register();
+    private static final IvParameterSpec SPEC =
+        new IvParameterSpec(IV);
+
+    @Test
+    public void engineInitSpecTest()
+        throws InvalidParameterSpecException {
+        final HC256ParametersSpi spi = new HC256ParametersSpi();
+
+        spi.engineInit(SPEC);
+
+        final IvParameterSpec specout =
+            spi.engineGetParameterSpec(IvParameterSpec.class);
+
+        Assert.assertEquals(specout.getIV(), SPEC.getIV());
     }
 
-    @AfterClass
-    public static void fini() {
-        KryptonProvider.unregister();
-    }
+    @Test
+    public void engineGetEncodedTest()
+        throws InvalidParameterSpecException {
+        final HC256ParametersSpi spi = new HC256ParametersSpi();
 
-    public Salsa20JCACipherTest() {
-        super(KryptonProvider.NAME, Salsa20CipherSpi.NAME, 256, 64);
-    }
+        spi.engineInit(SPEC);
+        spi.engineInit(spi.engineGetEncoded());
 
-    @Override
-    protected void jcaCipherSmokeTest()
-        throws ShortBufferException, InvalidKeyException,
-               NoSuchAlgorithmException, NoSuchProviderException,
-               InvalidAlgorithmParameterException, IllegalBlockSizeException,
-               NoSuchPaddingException, BadPaddingException {
-        super.jcaCipherSmokeTest();
+        final IvParameterSpec specout =
+            spi.engineGetParameterSpec(IvParameterSpec.class);
+
+        Assert.assertEquals(specout.getIV(), SPEC.getIV());
     }
 }

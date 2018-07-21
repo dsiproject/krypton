@@ -91,7 +91,6 @@ public abstract class KeystreamCipherSpi<K extends SecretKey & Key,
      */
     protected K key;
 
-
     /**
      * Initialize the engine with a block buffer and an IV buffer.
      * This takes possession of the arrays.
@@ -260,6 +259,7 @@ public abstract class KeystreamCipherSpi<K extends SecretKey & Key,
         this.key = key;
 
         // Compute the stream block
+        initState();
         streamBlock();
     }
 
@@ -350,6 +350,11 @@ public abstract class KeystreamCipherSpi<K extends SecretKey & Key,
      * Compute the current stream block.
      */
     protected abstract void streamBlock();
+
+    /**
+     * Initialize the state.
+     */
+    protected abstract void initState();
 
     /**
      * Advance to the next stream block and compute it.

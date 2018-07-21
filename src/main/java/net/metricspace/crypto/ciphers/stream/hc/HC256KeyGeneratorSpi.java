@@ -29,45 +29,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.ciphers.stream.salsa;
+package net.metricspace.crypto.ciphers.stream.hc;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import net.metricspace.crypto.common.Common256BitKeyGeneratorSpi;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.ShortBufferException;
-
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-
-import net.metricspace.crypto.ciphers.stream.SeekableStreamCipherJCACipherTest;
-import net.metricspace.crypto.providers.KryptonProvider;
-
-public class Salsa20JCACipherTest extends SeekableStreamCipherJCACipherTest {
-    @BeforeClass
-    public static void init() {
-        KryptonProvider.register();
-    }
-
-    @AfterClass
-    public static void fini() {
-        KryptonProvider.unregister();
-    }
-
-    public Salsa20JCACipherTest() {
-        super(KryptonProvider.NAME, Salsa20CipherSpi.NAME, 256, 64);
-    }
-
+/**
+ * A key generator for the HC-256 cipher.
+ * <h2>Usage</h2>
+ *
+ * This class should not be used directly.  It provides the underlying
+ * implementation for the Java Cryptography Architecture (JCA).  See
+ * the {@link javax.crypto.KeyGenerator} class documentation for information
+ * on how to use this key generator.
+ *
+ * @see net.metricspace.crypto.providers.KryptonProvider
+ * @see javax.crypto.KeyGenerator
+ */
+public final class HC256KeyGeneratorSpi extends Common256BitKeyGeneratorSpi {
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void jcaCipherSmokeTest()
-        throws ShortBufferException, InvalidKeyException,
-               NoSuchAlgorithmException, NoSuchProviderException,
-               InvalidAlgorithmParameterException, IllegalBlockSizeException,
-               NoSuchPaddingException, BadPaddingException {
-        super.jcaCipherSmokeTest();
+    protected final HC256CipherSpi.HC256Key
+        engineGenerateKey(final byte[] data) {
+        return new HC256CipherSpi.HC256Key(data);
     }
 }
