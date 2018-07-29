@@ -15,14 +15,26 @@
     <jcov.coverage.dir>${jcov.dir}/coverage</jcov.coverage.dir>
     <jcov.reports.dir>${jcov.dir}/reports</jcov.reports.dir>
     <jcov_file_saver.jar>${jcov.dir}/jcov_file_saver.jar</jcov_file_saver.jar>
+    <jcov.template.xml>${jcov.dir}/template.xml</jcov.template.xml>
+    <jcov.surefire.coverage.xml>${jcov.dir}/surefire-coverage.xml</jcov.surefire.coverage.xml>
+    <jcov.failsafe.coverage.xml>${jcov.dir}/failsafe-coverage.xml</jcov.failsafe.coverage.xml>
+    <jcov.combined.coverage.xml>${jcov.dir}/combined-coverage.xml</jcov.combined.coverage.xml>
+    <slf4j.version>1.7.21</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <test.unit.srcs>${project.basedir}/src/test/unit/java</test.unit.srcs>
     <project.build.instr.outputDirectory>${project.build.directory}/jcov-classes</project.build.instr.outputDirectory>
-    <jcov.template.xml>${jcov.dir}/template.xml</jcov.template.xml>
-    <jcov.surefire.coverage.xml>${jcov.dir}/surefire-coverage.xml</jcov.surefire.coverage.xml>
-    <test.unit.srcs>src/test/unit/java</test.unit.srcs>
-    <test.unit.classes>target/unit-test-classes</test.unit.classes>
+    <test.unit.dir>src/test/unit</test.unit.dir>
+    <test.unit.srcs>${test.unit.dir}/java</test.unit.srcs>
+    <test.unit.resources>${test.unit.dir}/resources</test.unit.resources>
+    <test.unit.testng.xml>${test.unit.resources}/testng.xml</test.unit.testng.xml>
+    <target.dir>target</target.dir>
+    <test.unit.classes>${target}/unit-test-classes</test.unit.classes>
+    <test.stress.dir>src/test/stress</test.stress.dir>
+    <test.stress.srcs>${test.stress.dir}/java</test.stress.srcs>
+    <test.stress.resources>${test.stress.dir}/resources</test.stress.resources>
+    <test.stress.testng.xml>${test.stress.resources}/testng.xml</test.stress.testng.xml>
+    <testng.version>6.1.1</testng.version>
   </properties>
 
   <dependencies>
