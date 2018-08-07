@@ -45,6 +45,7 @@ import net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.Salsa20KeyGeneratorSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.Salsa20ParameterGeneratorSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
+import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
 
 /**
  * The {@link Provider} for curated cryptographic algorithms.
@@ -66,6 +67,12 @@ import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
  *      ({@link net.metricspace.crypto.ciphers.stream.salsa.ChaCha20CipherSpi})
  * <li> HC-256
  *      ({@link net.metricspace.crypto.ciphers.stream.hc.HC256CipherSpi})
+ * </ul>
+ * <p>
+ * <b>Hashes</b>
+ * <ul>
+ * <li> RipeMD-160
+ *      ({@link net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi})
  * </ul>
  * <p>
  * See the corresponding Spi class documentation for each cipher for
@@ -122,6 +129,9 @@ public final class KryptonProvider extends Provider {
         put("Cipher.ChaCha20", ChaCha20CipherSpi.class.getName());
         put("Cipher.Salsa20", Salsa20CipherSpi.class.getName());
         put("Cipher.HC-256", HC256CipherSpi.class.getName());
+
+        put("MessageDigest.RipeMD-160",
+            RipeMD160MessageDigestSpi.class.getName());
     }
 
     /**
