@@ -52,6 +52,7 @@ import org.testng.annotations.Test;
 
 import net.metricspace.crypto.providers.KryptonProvider;
 
+@Test(groups = "unit")
 public abstract class JCACipherTest {
     protected final String providername;
     protected final String ciphername;

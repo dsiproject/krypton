@@ -21,7 +21,7 @@ The following is a listing of the functionality Krypton aims to support.
 ### Stream Ciphers
 
 * Salsa20
-* ChaCha29
+* ChaCha20
 * HC-256
 
 ### Block Ciphers
@@ -34,6 +34,7 @@ The following is a listing of the functionality Krypton aims to support.
 ## MACs
 
 * Poly1305
+* HMAC modes for all hashes
 
 ## Hashes
 
@@ -41,6 +42,7 @@ The following is a listing of the functionality Krypton aims to support.
 * Skein
 * BLAKE-2b
 * Whirlpool
+* RipeMD-160
 
 ## Elliptic Curves
 
@@ -54,4 +56,3 @@ The following is a listing of the functionality Krypton aims to support.
 * Curve41417
 * M-512
 * E-521
-
