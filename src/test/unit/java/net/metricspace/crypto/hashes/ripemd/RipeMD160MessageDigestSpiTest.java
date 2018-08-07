@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, Eric McCorkle.  All rights reserved.
+/* Copyright (c) 2018, Eric McCorkle.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,6 +44,7 @@ import org.testng.annotations.Test;
 import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
 import net.metricspace.crypto.providers.KryptonProvider;
 
+@Test(groups = "unit")
 public class RipeMD160MessageDigestSpiTest {
     @BeforeClass
     public static void init() {
@@ -181,7 +182,6 @@ public class RipeMD160MessageDigestSpiTest {
 
         spi.engineDigest(actual, 0, 20);
         Assert.assertEquals(actual, EXPECTED_EMPTY_HASH);
-
     }
 
     @DataProvider(name = "hash")
@@ -200,6 +200,5 @@ public class RipeMD160MessageDigestSpiTest {
         spi.engineUpdate(input, 0, input.length);
         spi.engineDigest(actual, 0, 20);
         Assert.assertEquals(actual, expected);
-
     }
 }

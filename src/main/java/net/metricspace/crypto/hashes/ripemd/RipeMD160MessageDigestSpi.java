@@ -48,6 +48,8 @@ public final class RipeMD160MessageDigestSpi extends BlockMessageDigestSpi {
     private final int[] state = new int[5];
     private final int[] wordsblock = new int[BLOCK_WORDS];
 
+    public static final String NAME = "RipeMD-160";
+
     public RipeMD160MessageDigestSpi() {
         super(BLOCK_BYTES);
 
