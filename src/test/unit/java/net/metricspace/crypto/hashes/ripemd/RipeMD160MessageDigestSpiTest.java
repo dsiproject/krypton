@@ -41,21 +41,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import net.metricspace.crypto.hashes.MessageDigestSpiTest;
 import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
 import net.metricspace.crypto.providers.KryptonProvider;
 
-@Test(groups = "unit")
-public class RipeMD160MessageDigestSpiTest {
-    @BeforeClass
-    public static void init() {
-        KryptonProvider.register();
-    }
-
-    @AfterClass
-    public static void fini() {
-        KryptonProvider.unregister();
-    }
-
+public class RipeMD160MessageDigestSpiTest extends MessageDigestSpiTest {
     private static final byte[] EXPECTED_EMPTY_HASH = new byte[] {
         (byte)0x9c, (byte)0x11, (byte)0x85, (byte)0xa5,
         (byte)0xc5, (byte)0xe9, (byte)0xfc, (byte)0x54,
@@ -174,31 +164,28 @@ public class RipeMD160MessageDigestSpiTest {
         },
     };
 
-    @Test(description = "Test an empty hash")
-    public static void emptyHashTest()
-        throws DigestException {
-        final RipeMD160MessageDigestSpi spi = new RipeMD160MessageDigestSpi();
-        final byte[] actual = new byte[20];
-
-        spi.engineDigest(actual, 0, 20);
-        Assert.assertEquals(actual, EXPECTED_EMPTY_HASH);
+    public RipeMD160MessageDigestSpiTest() {
+        super(20, EXPECTED_EMPTY_HASH);
     }
 
+    @BeforeClass
+    public static void init() {
+        KryptonProvider.register();
+    }
+
+    @AfterClass
+    public static void fini() {
+        KryptonProvider.unregister();
+    }
+
+    @Override
     @DataProvider(name = "hash")
-    private static Object[][] hashProvider() {
+    protected Object[][] hashProvider() {
         return HASH_CASES;
     }
 
-    @Test(dataProvider = "hash",
-          description = "Test hash")
-    public static void hashTest(final byte[] input,
-                                final byte[] expected)
-        throws DigestException {
-        final RipeMD160MessageDigestSpi spi = new RipeMD160MessageDigestSpi();
-        final byte[] actual = new byte[20];
-
-        spi.engineUpdate(input, 0, input.length);
-        spi.engineDigest(actual, 0, 20);
-        Assert.assertEquals(actual, expected);
+    @Override
+    protected RipeMD160MessageDigestSpi getMessageDigest() {
+        return new RipeMD160MessageDigestSpi();
     }
 }

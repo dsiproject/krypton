@@ -36,10 +36,30 @@ import java.nio.ByteBuffer;
 import java.security.DigestException;
 import java.security.MessageDigestSpi;
 
+/**
+ * A common abstraction for {@link MessageDigestSpi} implementations
+ * that operate on fixed-size blocks of data.  This handles the
+ * buffering, leaving the core hash functions to subclasses.
+ */
 public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
+    /**
+     * Number of bytes in a block.
+     */
     protected final int blockBytes;
+
+    /**
+     * Block data.
+     */
     protected final byte[] block;
+
+    /**
+     * Current offset into the block.
+     */
     protected int blockOffset = 0;
+
+    /**
+     * Number of bytes that have been processed.
+     */
     protected long inputBytes = 0;
 
     /**
@@ -66,8 +86,19 @@ public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
 
     /**
      * Process a full block of input.
+     *
+     * @param last Whether this is the last block.
      */
     protected abstract void processBlock();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected abstract int engineDigest(final byte[] output,
+                                        final int outputOffset,
+                                        final int outputLen)
+        throws DigestException;
 
     /**
      * {@inheritDoc}
@@ -103,13 +134,15 @@ public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
             final int blockRemaining = blockBytes - blockOffset;
             final int groupLen;
 
-            if (inputRemaining < blockRemaining) {
+            if (inputRemaining <= blockRemaining) {
                 groupLen = inputRemaining;
+                inputBytes += groupLen;
                 buf.get(block, blockOffset, groupLen);
                 blockOffset += groupLen;
                 i += groupLen;
             } else {
                 groupLen = blockRemaining;
+                inputBytes += groupLen;
                 buf.get(block, blockOffset, groupLen);
                 processBlock();
                 blockOffset = 0;
@@ -130,14 +163,16 @@ public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
             final int blockRemaining = blockBytes - blockOffset;
             final int groupLen;
 
-            if (inputRemaining < blockRemaining) {
+            if (inputRemaining <= blockRemaining) {
                 groupLen = inputRemaining;
+                inputBytes += groupLen;
                 System.arraycopy(input, inputOffset + i, block,
                                  blockOffset, groupLen);
                 blockOffset += groupLen;
                 i += groupLen;
             } else {
                 groupLen = blockRemaining;
+                inputBytes += groupLen;
                 System.arraycopy(input, inputOffset + i, block,
                                  blockOffset, groupLen);
                 processBlock();
@@ -145,7 +180,6 @@ public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
                 i += groupLen;
             }
         }
-        inputBytes += inputLen;
     }
 
     /**

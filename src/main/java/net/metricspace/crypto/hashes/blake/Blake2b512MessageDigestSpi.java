@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, Eric McCorkle.  All rights reserved.
+/* Copyright (c) 2018, Eric McCorkle.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,44 +29,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.metricspace.crypto.digests.blake;
+package net.metricspace.crypto.hashes.blake;
 
-import java.security.MessageDigestSpi;
-
-public class Blake2bMessageDigestSpi extends MessageDigestSpi {
+public final class Blake2b512MessageDigestSpi extends Blake2bMessageDigestSpi {
+    public static final String NAME = "Blake2b-512";
     public static final int HASH_BITS = 512;
     public static final int HASH_BYTES = HASH_BITS / 8;
-    public static final String NAME = "Blake2b-512";
 
-    public static final int BLOCK_BYTES = 128;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected byte[] engineDigest() {
+    public Blake2b512MessageDigestSpi(final byte[] key) {
+        super(HASH_BYTES, key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void engineReset() {
+    public Blake2b512MessageDigestSpi() {
+        super(HASH_BYTES);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void engineUpdate(final byte input) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void engineUpdate(final byte[] input,
-                                final int offset,
-                                final int len) {
-    }
 }
