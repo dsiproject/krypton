@@ -586,7 +586,6 @@ public class Blake2b512MessageDigestSpiTest extends KeyedMessageDigestSpiTest {
                 (byte)0x74, (byte)0x75, (byte)0x76, (byte)0x77,
                 (byte)0x78, (byte)0x79, (byte)0x7a, (byte)0x7b,
                 (byte)0x7c, (byte)0x7d, (byte)0x7e, (byte)0x7f,
-
                 (byte)0x80, (byte)0x81, (byte)0x82, (byte)0x83,
                 (byte)0x84, (byte)0x85, (byte)0x86, (byte)0x87,
                 (byte)0x88, (byte)0x89, (byte)0x8a, (byte)0x8b,

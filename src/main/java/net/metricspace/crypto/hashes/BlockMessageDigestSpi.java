@@ -114,14 +114,14 @@ public abstract class BlockMessageDigestSpi extends MessageDigestSpi {
      */
     @Override
     protected final void engineUpdate(final byte input) {
-        block[blockOffset] = input;
-        blockOffset++;
-        inputBytes++;
-
         if (blockOffset >= blockBytes) {
             processBlock();
             blockOffset = 0;
         }
+
+        block[blockOffset] = input;
+        blockOffset++;
+        inputBytes++;
     }
 
     /**
