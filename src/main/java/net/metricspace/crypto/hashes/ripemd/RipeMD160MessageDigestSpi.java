@@ -38,6 +38,13 @@ import java.security.MessageDigestSpi;
 
 import net.metricspace.crypto.hashes.BlockMessageDigestSpi;
 
+/**
+ * A {@link MessageDigestSpi} implementation for the RipeMD-160
+ * cryptographic hash.  RipeMD-160 was introduced in 1996 by
+ * Dobbertin, Bosselaers, and Preneel.  Details on the algorithm can
+ * be found <a
+ * href="https://homes.esat.kuleuven.be/~bosselae/ripemd160.html">here</a>.
+ */
 public final class RipeMD160MessageDigestSpi extends BlockMessageDigestSpi {
     private static final int HASH_BITS = 160;
     private static final int HASH_BYTES = HASH_BITS / 8;
@@ -48,8 +55,14 @@ public final class RipeMD160MessageDigestSpi extends BlockMessageDigestSpi {
     private final int[] state = new int[5];
     private final int[] wordsblock = new int[BLOCK_WORDS];
 
+    /**
+     * Name of the RipeMD-160 hash.
+     */
     public static final String NAME = "RipeMD-160";
 
+    /**
+     * Initialize a {@code RipeMD160MessageDigestSpi}.
+     */
     public RipeMD160MessageDigestSpi() {
         super(BLOCK_BYTES);
 
@@ -94,6 +107,11 @@ public final class RipeMD160MessageDigestSpi extends BlockMessageDigestSpi {
             throw new DigestException("Insufficient space for digest");
         }
 
+        if (blockOffset == BLOCK_BYTES) {
+            processBlock();
+            blockOffset = 0;
+        }
+
         block[blockOffset] = (byte)0x80;
         blockOffset++;
 
@@ -125,16 +143,6 @@ public final class RipeMD160MessageDigestSpi extends BlockMessageDigestSpi {
         }
 
         return HASH_BYTES;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void engineUpdate(final byte[] input,
-                                final int inputOffset,
-                                final int inputLen) {
-        super.engineUpdate(input, inputOffset, inputLen);
     }
 
     /**

@@ -45,6 +45,9 @@ import net.metricspace.crypto.ciphers.stream.salsa.Salsa20CipherSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.Salsa20KeyGeneratorSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.Salsa20ParameterGeneratorSpi;
 import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
+import net.metricspace.crypto.hashes.blake.Blake2b256MessageDigestSpi;
+import net.metricspace.crypto.hashes.blake.Blake2b384MessageDigestSpi;
+import net.metricspace.crypto.hashes.blake.Blake2b512MessageDigestSpi;
 import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
 
 /**
@@ -73,6 +76,12 @@ import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
  * <ul>
  * <li> RipeMD-160
  *      ({@link net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi})
+ * <li> Blake2b-256
+ *      ({@link net.metricspace.crypto.hashes.blake.Blake2b256MessageDigestSpi})
+ * <li> Blake2b-384
+ *      ({@link net.metricspace.crypto.hashes.blake.Blake2b384MessageDigestSpi})
+ * <li> Blake2b-512
+ *      ({@link net.metricspace.crypto.hashes.blake.Blake2b512MessageDigestSpi})
  * </ul>
  * <p>
  * See the corresponding Spi class documentation for each cipher for
@@ -132,6 +141,12 @@ public final class KryptonProvider extends Provider {
 
         put("MessageDigest.RipeMD-160",
             RipeMD160MessageDigestSpi.class.getName());
+        put("MessageDigest.Blake2b-512",
+            Blake2b512MessageDigestSpi.class.getName());
+        put("MessageDigest.Blake2b-384",
+            Blake2b384MessageDigestSpi.class.getName());
+        put("MessageDigest.Blake2b-256",
+            Blake2b256MessageDigestSpi.class.getName());
     }
 
     /**
