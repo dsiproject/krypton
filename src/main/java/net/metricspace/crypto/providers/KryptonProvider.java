@@ -48,6 +48,10 @@ import net.metricspace.crypto.ciphers.stream.salsa.SalsaFamilyParametersSpi;
 import net.metricspace.crypto.hashes.blake.Blake2b256MessageDigestSpi;
 import net.metricspace.crypto.hashes.blake.Blake2b384MessageDigestSpi;
 import net.metricspace.crypto.hashes.blake.Blake2b512MessageDigestSpi;
+import net.metricspace.crypto.hashes.keccak.Keccak224MessageDigestSpi;
+import net.metricspace.crypto.hashes.keccak.Keccak256MessageDigestSpi;
+import net.metricspace.crypto.hashes.keccak.Keccak384MessageDigestSpi;
+import net.metricspace.crypto.hashes.keccak.Keccak512MessageDigestSpi;
 import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
 
 /**
@@ -76,6 +80,14 @@ import net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi;
  * <ul>
  * <li> RipeMD-160
  *      ({@link net.metricspace.crypto.hashes.ripemd.RipeMD160MessageDigestSpi})
+ * <li> SHA3-224
+ *      ({@link net.metricspace.crypto.hashes.keccak.Keccak224MessageDigestSpi})
+ * <li> SHA3-256
+ *      ({@link net.metricspace.crypto.hashes.keccak.Keccak256MessageDigestSpi})
+ * <li> SHA3-384
+ *      ({@link net.metricspace.crypto.hashes.keccak.Keccak384MessageDigestSpi})
+ * <li> SHA3-512
+ *      ({@link net.metricspace.crypto.hashes.keccak.Keccak512MessageDigestSpi})
  * <li> Blake2b-256
  *      ({@link net.metricspace.crypto.hashes.blake.Blake2b256MessageDigestSpi})
  * <li> Blake2b-384
@@ -117,10 +129,12 @@ public final class KryptonProvider extends Provider {
     private KryptonProvider() {
         super(NAME, VERSION, "Krypton curated cipher suite");
 
+        // Cipher key generators
         put("KeyGenerator.ChaCha20", ChaCha20KeyGeneratorSpi.class.getName());
         put("KeyGenerator.Salsa20", Salsa20KeyGeneratorSpi.class.getName());
         put("KeyGenerator.HC-256", HC256KeyGeneratorSpi.class.getName());
 
+        // Cipher parameters
         put("AlgorithmParameters.ChaCha20",
             SalsaFamilyParametersSpi.class.getName());
         put("AlgorithmParameters.Salsa20",
@@ -128,6 +142,7 @@ public final class KryptonProvider extends Provider {
         put("AlgorithmParameters.HC-256",
             HC256ParametersSpi.class.getName());
 
+        // Cipher parameter generators
         put("AlgorithmParameterGenerator.ChaCha20",
             ChaCha20ParameterGeneratorSpi.class.getName());
         put("AlgorithmParameterGenerator.Salsa20",
@@ -135,10 +150,12 @@ public final class KryptonProvider extends Provider {
         put("AlgorithmParameterGenerator.HC-256",
             HC256ParameterGeneratorSpi.class.getName());
 
+        // Stream ciphers
         put("Cipher.ChaCha20", ChaCha20CipherSpi.class.getName());
         put("Cipher.Salsa20", Salsa20CipherSpi.class.getName());
         put("Cipher.HC-256", HC256CipherSpi.class.getName());
 
+        // Hashes
         put("MessageDigest.RipeMD-160",
             RipeMD160MessageDigestSpi.class.getName());
         put("MessageDigest.Blake2b-512",
@@ -147,6 +164,14 @@ public final class KryptonProvider extends Provider {
             Blake2b384MessageDigestSpi.class.getName());
         put("MessageDigest.Blake2b-256",
             Blake2b256MessageDigestSpi.class.getName());
+        put("MessageDigest.SHA3-512",
+            Keccak512MessageDigestSpi.class.getName());
+        put("MessageDigest.SHA3-384",
+            Keccak384MessageDigestSpi.class.getName());
+        put("MessageDigest.SHA3-256",
+            Keccak256MessageDigestSpi.class.getName());
+        put("MessageDigest.SHA3-224",
+            Keccak224MessageDigestSpi.class.getName());
     }
 
     /**
