@@ -333,7 +333,6 @@ abstract class KeccakMessageDigestSpi extends BlockMessageDigestSpi {
 
             keccakF();
         }
-        System.err.println();
 
         return hashBytes;
     }

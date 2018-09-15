@@ -34,10 +34,12 @@ package net.metricspace.crypto.hashes.keccak;
 /**
  */
 public final class Keccak512MessageDigestSpi extends KeccakMessageDigestSpi {
+    public static final String NAME = "SHA3-512";
+
     /**
      * Initialize a {@code Keccak512MessageDigestSpi} with a hash size.
      */
-    protected Keccak512MessageDigestSpi() {
+    public Keccak512MessageDigestSpi() {
         super(512 / 8, 1024, 576);
     }
 }
